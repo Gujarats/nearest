@@ -9,6 +9,26 @@ import (
 )
 
 func main() {
+	testRedis()
+}
+
+func testRedis() {
+	database.ExampleNewClient()
+	database.Testing()
+	//insert Seller 1
+	database.InsertActiveSeller(1)
+	database.InsertActiveSeller(2)
+	database.InsertActiveSeller(3)
+	database.InsertActiveSeller(4)
+	database.InsertActiveSeller(5)
+	database.InsertActiveSeller(6)
+	database.InsertActiveSeller(8)
+
+	//get Active seller
+	database.GetActiveSeller("active_seller:2016-12-21")
+}
+
+func testAPI() {
 	database.InitMysqlDb()
 	log.Printf("App starting ...")
 	router := httprouter.New()
