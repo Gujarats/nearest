@@ -13,8 +13,7 @@ func main() {
 }
 
 func testRedis() {
-	database.ExampleNewClient()
-	database.Testing()
+	database.NewClient()
 	//insert Seller 1
 	database.InsertActiveSeller(1)
 	database.InsertActiveSeller(2)

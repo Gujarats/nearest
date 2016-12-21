@@ -8,6 +8,17 @@ import (
 
 var Redisdb *redis.Client
 
+func NewClient() {
+
+	client := redis.NewClient(&redis.Options{
+		Addr:     "localhost:6379",
+		Password: "", // no password set
+		DB:       0,  // use default DB
+	})
+
+	Redisdb = client
+}
+
 func InsertActiveSeller(userId int64) {
 	t := time.Now().Local()
 	//format time now to yyy-mm-dd
