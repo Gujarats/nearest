@@ -2,7 +2,6 @@ package handler
 
 import (
 	"encoding/json"
-	"fmt"
 	"github.com/julienschmidt/httprouter"
 	"github.com/training_project/controller"
 	"github.com/training_project/model"
@@ -44,27 +43,31 @@ func ReadTalks(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
 }
 
 func WriteTalks(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
-	//	w.Header().Set("Access-Control-Allow-Origin", "*")
-	//w.Header().Set("Content-Type", "application/vnd.api+json")
-	fmt.Println("hellloooo")
-	var m model.Message
-	if r.Body == nil {
-		http.Error(w, "Please send a request body", 400)
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+	w.Header().Set("Content-Type", "application/vnd.api+json")
+
+	//declare response
+	var response model.Response
+
+	//get the params
+	message := r.FormValue("message")
+	if message == "" {
+		response.Status = "Failed : message empty"
+		//return response as JSON
+		json.NewEncoder(w).Encode(response)
+		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
 
-	fmt.Println("hellloooo2")
-	err := json.NewDecoder(r.Body).Decode(&m)
+	//insert data
+	err := controller.InsertTalk(message)
 	if err != nil {
 		log.Fatal(err)
-		http.Error(w, err.Error(), 400)
-
-		fmt.Println("Masuk Error")
-		return
 	}
 
-	fmt.Println("hellloooo3")
-
-	fmt.Println("ShopId = ", m.ShopId)
+	//return response as JSON
+	response.Status = "OK : data inserted"
+	json.NewEncoder(w).Encode(response)
+	w.WriteHeader(http.StatusOK)
 	return
 }

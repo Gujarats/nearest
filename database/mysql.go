@@ -12,7 +12,7 @@ func InitMysqlDb() {
 	db, err := sql.Open("mysql", "root:root@/tokopediaDb")
 
 	if err != nil {
-		log.Fatal("Error : Openind database data source argument not valid")
+		log.Fatal("Error : Opening database data source argument not valid")
 	}
 
 	err = db.Ping()

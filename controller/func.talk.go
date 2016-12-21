@@ -45,3 +45,26 @@ func GetTalks(productId int64) []model.Talk {
 
 	return talks
 }
+
+func InsertTalk(message string) error {
+	//query := fmt.Sprintf(
+	//	`
+	//	insert test_table set message=?
+	//	`,
+	//	message)
+
+	stm, err := database.MysqlDb.Prepare("insert test_table set message=?")
+
+	if err != nil {
+		//return the error
+		return err
+	}
+	_, err = stm.Exec(message)
+	if err != nil {
+		//return the error
+		return err
+	}
+
+	return nil
+
+}

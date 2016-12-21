@@ -14,7 +14,7 @@ func main() {
 	router := httprouter.New()
 
 	router.GET("/v1/talks", handler.ReadTalks)
-	router.POST("/v1/talks/insert", handler.WriteTalks)
+	router.POST("/v1/talks", handler.WriteTalks)
 
 	log.Printf("App listen on 3000")
 	log.Fatal(http.ListenAndServe(":3000", router))
