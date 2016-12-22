@@ -19,12 +19,34 @@ func NewClient() {
 	Redisdb = client
 }
 
-func InsertActiveSeller(userId int64) {
+func InsertActiveSellerDaily(userId int64) {
 	t := time.Now().Local()
 	//format time now to yyy-mm-dd
 	formatTime := t.Format("2006-01-02")
 
-	keyActiveSeller := "active_seller:" + formatTime
+	keyActiveSeller := "active_seller_daily:" + formatTime
+
+	Redisdb.SetBit(keyActiveSeller, userId, 1)
+
+}
+
+func InsertActiveSellerWeekly(userId int64) {
+	t := time.Now().Local()
+	//format time now to yyy-mm-dd
+	formatTime := t.Format("2006-01-02")
+
+	keyActiveSeller := "active_seller_weekly:" + formatTime
+
+	Redisdb.SetBit(keyActiveSeller, userId, 1)
+
+}
+
+func InsertActiveSellerMonthly(userId int64) {
+	t := time.Now().Local()
+	//format time now to yyy-mm-dd
+	formatTime := t.Format("2006-01-02")
+
+	keyActiveSeller := "active_seller_monthly:" + formatTime
 
 	Redisdb.SetBit(keyActiveSeller, userId, 1)
 
@@ -33,8 +55,4 @@ func InsertActiveSeller(userId int64) {
 func GetActiveSeller(keyActiveSeller string) {
 	uniqueSeller := Redisdb.Get(keyActiveSeller)
 	fmt.Print(uniqueSeller, "\n")
-}
-
-func CountUniqueUser() {
-
 }

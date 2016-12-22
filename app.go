@@ -15,16 +15,13 @@ func main() {
 func testRedis() {
 	database.NewClient()
 	//insert Seller 1
-	database.InsertActiveSeller(1)
-	database.InsertActiveSeller(2)
-	database.InsertActiveSeller(3)
-	database.InsertActiveSeller(4)
-	database.InsertActiveSeller(5)
-	database.InsertActiveSeller(6)
-	database.InsertActiveSeller(8)
+	database.InsertActiveSellerDaily(1)
+	database.InsertActiveSellerDaily(4)
+	database.InsertActiveSellerDaily(5)
+	database.InsertActiveSellerDaily(8)
 
 	//get Active seller
-	database.GetActiveSeller("active_seller:2016-12-21")
+	//database.GetActiveSeller("active_seller:2016-12-21")
 }
 
 func testAPI() {
