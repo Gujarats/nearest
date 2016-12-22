@@ -16,7 +16,19 @@ func NewClient() {
 		DB:       0,  // use default DB
 	})
 
+	pong, err := client.Ping().Result()
+	fmt.Println(pong, err)
+
 	Redisdb = client
+}
+
+func TestGetValue(formatTime string) {
+	val, err := Redisdb.Get("active_seller_daily:" + formatTime).Result()
+	if err != nil {
+		fmt.Printf("error = %s\n", err)
+		panic(err)
+	}
+	fmt.Println("key", val)
 }
 
 func InsertActiveSellerDaily(userId int64) {
@@ -28,6 +40,7 @@ func InsertActiveSellerDaily(userId int64) {
 
 	Redisdb.SetBit(keyActiveSeller, userId, 1)
 
+	TestGetValue(formatTime)
 }
 
 func InsertActiveSellerWeekly(userId int64) {

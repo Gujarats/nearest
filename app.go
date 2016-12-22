@@ -19,6 +19,9 @@ func testRedis() {
 	database.InsertActiveSellerDaily(4)
 	database.InsertActiveSellerDaily(5)
 	database.InsertActiveSellerDaily(8)
+	database.InsertActiveSellerDaily(11)
+	database.InsertActiveSellerDaily(111)
+	database.InsertActiveSellerDaily(211)
 
 	//get Active seller
 	//database.GetActiveSeller("active_seller:2016-12-21")
