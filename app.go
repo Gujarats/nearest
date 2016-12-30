@@ -23,8 +23,12 @@ func testRedis() {
 	database.InsertActiveSellerDaily(111)
 	database.InsertActiveSellerDaily(211)
 
-	//get Active seller
-	//database.GetActiveSeller("active_seller:2016-12-21")
+	//testing for getting the result
+	halo := database.IsIdExist(1)
+	halo2 := database.IsIdExist(9)
+
+	log.Printf("halo = %v\n", halo)
+	log.Printf("halo2 = %v\n", halo2)
 }
 
 func testAPI() {

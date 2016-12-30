@@ -3,6 +3,7 @@ package database
 import (
 	"fmt"
 	"gopkg.in/redis.v4"
+	"log"
 	"time"
 )
 
@@ -22,25 +23,40 @@ func NewClient() {
 	Redisdb = client
 }
 
-func TestGetValue(formatTime string) {
-	val, err := Redisdb.Get("active_seller_daily:" + formatTime).Result()
-	if err != nil {
-		fmt.Printf("error = %s\n", err)
-		panic(err)
-	}
-	fmt.Println("key", val)
-}
-
-func InsertActiveSellerDaily(userId int64) {
-	t := time.Now().Local()
+//checking the input id in redis exist or not
+func IsIdExist(someId int64) bool {
 	//format time now to yyy-mm-dd
+	t := time.Now().Local()
 	formatTime := t.Format("2006-01-02")
 
 	keyActiveSeller := "active_seller_daily:" + formatTime
 
-	Redisdb.SetBit(keyActiveSeller, userId, 1)
+	result, err := Redisdb.GetBit(keyActiveSeller, someId).Result()
 
-	TestGetValue(formatTime)
+	if err != nil {
+		log.Println("Error IsIdExist = ", err.Error())
+		return false
+	}
+
+	if result == 1 {
+		return true
+	} else {
+		return false
+	}
+}
+
+func InsertActiveSellerDaily(userId int64) {
+	//format time now to yyy-mm-dd
+	t := time.Now().Local()
+	formatTime := t.Format("2006-01-02")
+
+	keyActiveSeller := "active_seller_daily:" + formatTime
+
+	_, err := Redisdb.SetBit(keyActiveSeller, userId, 1).Result()
+	if err != nil {
+		log.Println("Error Insert = ", err.Error())
+	}
+
 }
 
 func InsertActiveSellerWeekly(userId int64) {
