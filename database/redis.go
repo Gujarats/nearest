@@ -9,7 +9,7 @@ import (
 
 var Redisdb *redis.Client
 
-func NewClient() {
+func InitRedisDb() {
 
 	client := redis.NewClient(&redis.Options{
 		Addr:     "localhost:6379",
@@ -21,6 +21,22 @@ func NewClient() {
 	fmt.Println(pong, err)
 
 	Redisdb = client
+}
+
+// get active seller setbit from redis
+func GetActiveSellerByte(keyActiveSeller string) string {
+	log.SetFlags(-1)
+	log.SetPrefix("redis query = ")
+	keyActiveSeller = "active_seller_daily:" + keyActiveSeller
+	log.Println(keyActiveSeller)
+
+	result, _ := Redisdb.Get(keyActiveSeller).Result()
+	//	for _, c := range result {
+	//		binString = fmt.Sprintf("%s%b", binString, c)
+	//	}
+	//
+
+	return result
 }
 
 //checking the input id in redis exist or not
@@ -58,7 +74,7 @@ func InsertActiveSellerDaily(userId int64) {
 	}
 
 	//use expire time 5 seconds
-	seconds := 10
+	seconds := 3600
 	Redisdb.Expire(keyActiveSeller, time.Duration(seconds)*time.Second)
 
 }
@@ -83,12 +99,4 @@ func InsertActiveSellerMonthly(userId int64) {
 
 	Redisdb.SetBit(keyActiveSeller, userId, 1)
 
-}
-
-func GetActiveSellerByte(keyActiveSeller string) {
-	uniqueSeller, err := Redisdb.Get(keyActiveSeller).Bytes()
-	if err != nil {
-		log.Fatal(err)
-	}
-	fmt.Printf("unique active seller %v\n", uniqueSeller)
 }

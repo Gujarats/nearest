@@ -8,7 +8,7 @@ import (
 
 var Postgre *sqlx.DB
 
-func Connect() {
+func InitPostgreDb() {
 	db, err := sqlx.Connect("postgres", "user=postgres dbname=potgres sslmode=disable")
 	if err != nil {
 		log.Fatal(err)
