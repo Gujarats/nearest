@@ -57,6 +57,10 @@ func InsertActiveSellerDaily(userId int64) {
 		log.Println("Error Insert = ", err.Error())
 	}
 
+	//use expire time 5 seconds
+	seconds := 10
+	Redisdb.Expire(keyActiveSeller, time.Duration(seconds)*time.Second)
+
 }
 
 func InsertActiveSellerWeekly(userId int64) {
@@ -81,7 +85,10 @@ func InsertActiveSellerMonthly(userId int64) {
 
 }
 
-func GetActiveSeller(keyActiveSeller string) {
-	uniqueSeller := Redisdb.Get(keyActiveSeller)
-	fmt.Print(uniqueSeller, "\n")
+func GetActiveSellerByte(keyActiveSeller string) {
+	uniqueSeller, err := Redisdb.Get(keyActiveSeller).Bytes()
+	if err != nil {
+		log.Fatal(err)
+	}
+	fmt.Printf("unique active seller %v\n", uniqueSeller)
 }
