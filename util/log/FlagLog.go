@@ -5,14 +5,12 @@ import (
 	"os"
 )
 
-var (
-	Trace *log.Logger
-)
+var Trace *log.Logger
 
-func Init() {
+func SetPrefix(prefix string) {
 
 	Trace = log.New(os.Stderr,
-		"TRACE: ",
+		prefix,
 		log.Ldate|log.Ltime|log.Lshortfile)
 
 }
