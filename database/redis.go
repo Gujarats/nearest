@@ -1,102 +1,31 @@
 package database
 
-import (
-	"fmt"
-	"gopkg.in/redis.v4"
-	"log"
-	"time"
-)
+import "gopkg.in/redis.v4"
 
-var Redisdb *redis.Client
+type RedisHost struct {
+	Address  string
+	Password string
+	DB       int
+}
 
-func InitRedisDb() {
+type RedisSytem interface {
+	Connect() *redis.Client
+}
+
+// connect to Redis and return the connection if succesful and error if otherwise
+func (self *RedisHost) Connect() (*redis.Client, error) {
 
 	client := redis.NewClient(&redis.Options{
-		Addr:     "localhost:6379",
-		Password: "", // no password set
-		DB:       0,  // use default DB
+		Addr:     self.Address,
+		Password: self.Password,
+		DB:       self.DB,
 	})
 
-	pong, err := client.Ping().Result()
-	fmt.Println(pong, err)
-
-	Redisdb = client
-}
-
-// get active seller setbit from redis
-func GetActiveSellerByte(keyActiveSeller string) string {
-	log.SetFlags(-1)
-	log.SetPrefix("redis query = ")
-	keyActiveSeller = "active_seller_daily:" + keyActiveSeller
-	log.Println(keyActiveSeller)
-
-	result, _ := Redisdb.Get(keyActiveSeller).Result()
-	//	for _, c := range result {
-	//		binString = fmt.Sprintf("%s%b", binString, c)
-	//	}
-	//
-
-	return result
-}
-
-//checking the input id in redis exist or not
-func IsIdExist(someId int64) bool {
-	//format time now to yyy-mm-dd
-	t := time.Now().Local()
-	formatTime := t.Format("2006-01-02")
-
-	keyActiveSeller := "active_seller_daily:" + formatTime
-
-	result, err := Redisdb.GetBit(keyActiveSeller, someId).Result()
-
+	//check redis connection
+	_, err := client.Ping().Result()
 	if err != nil {
-		log.Println("Error IsIdExist = ", err.Error())
-		return false
+		return nil, err
 	}
 
-	if result == 1 {
-		return true
-	} else {
-		return false
-	}
-}
-
-func InsertActiveSellerDaily(userId int64) {
-	//format time now to yyy-mm-dd
-	t := time.Now().Local()
-	formatTime := t.Format("2006-01-02")
-
-	keyActiveSeller := "active_seller_daily:" + formatTime
-
-	_, err := Redisdb.SetBit(keyActiveSeller, userId, 1).Result()
-	if err != nil {
-		log.Println("Error Insert = ", err.Error())
-	}
-
-	//use expire time 5 seconds
-	seconds := 3600
-	Redisdb.Expire(keyActiveSeller, time.Duration(seconds)*time.Second)
-
-}
-
-func InsertActiveSellerWeekly(userId int64) {
-	t := time.Now().Local()
-	//format time now to yyy-mm-dd
-	formatTime := t.Format("2006-01-02")
-
-	keyActiveSeller := "active_seller_weekly:" + formatTime
-
-	Redisdb.SetBit(keyActiveSeller, userId, 1)
-
-}
-
-func InsertActiveSellerMonthly(userId int64) {
-	t := time.Now().Local()
-	//format time now to yyy-mm-dd
-	formatTime := t.Format("2006-01-02")
-
-	keyActiveSeller := "active_seller_monthly:" + formatTime
-
-	Redisdb.SetBit(keyActiveSeller, userId, 1)
-
+	return client, nil
 }
