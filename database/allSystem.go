@@ -2,6 +2,7 @@ package database
 
 // this file is used for combining all the connection from different database system
 
+//we create different types of databse connection here
 func SystemConnection() map[string]interface{} {
 	listConnection := make(map[string]interface{})
 
@@ -11,15 +12,6 @@ func SystemConnection() map[string]interface{} {
 		Password: "",
 		DB:       0,
 	}
-
-	// create postgre connection
-	//postgreConn := PostgreHost{
-	//	Driver:   "postgre",
-	//	Database: "postgre",
-	//	Username: "postgre",
-	//	Ssl:      "disable",
-	//	Password: "root",
-	//}
 
 	redisConnection, err := redisConn.Connect()
 	if err != nil {

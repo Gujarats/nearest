@@ -10,14 +10,18 @@ func main() {
 	//getting list of all the connection
 	listConnection := database.SystemConnection()
 
-	//getting redis connection
+	//getting redis connection convert it from interface to *redisClient
 	redisConn := listConnection["redis"].(*redis.Client)
 
 	activeSeller := model.ActiveSeller{
-		Date:   "11-01-2017",
 		ShopId: 124,
 	}
 
+	//Get the connection and insert the value
 	activeSeller.GetConn(redisConn)
+	activeSeller.InsertActiveSeller()
+
+	//insert another id
+	activeSeller.ShopId = 1
 	activeSeller.InsertActiveSeller()
 }
