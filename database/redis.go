@@ -9,7 +9,7 @@ type RedisHost struct {
 }
 
 type RedisSytem interface {
-	Connect() *redis.Client
+	Connect() (*redis.Client, error)
 }
 
 // connect to Redis and return the connection if succesful and error if otherwise

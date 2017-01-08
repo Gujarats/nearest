@@ -6,36 +6,45 @@ import (
 	"log"
 	"time"
 
-	"gopkg.in/redis.v4"
+	redis "gopkg.in/redis.v4"
 )
 
 type ActiveSeller struct {
-	Date              string `db:"date"`
-	shopId            string `db:"shop_id"`
-	TotalActiveSeller string `db:"active_seller"`
-	RedisDb           *redis.Client
+	Date              string
+	ShopId            int64
+	TotalActiveSeller string
+}
+
+type Connection interface {
+	GetActiveSeller(*redis.Client, string) string
+}
+
+var redisConn *redis.Client
+
+func (self *ActiveSeller) GetConn(redisConnection *redis.Client) {
+	redisConn = redisConnection
 }
 
 // get active seller setbit from redis
-func (self ActiveSeller) GetActiveSeller(keyActiveSeller string) string {
+func (self *ActiveSeller) GetActiveSeller(keyActiveSeller string) string {
 	log.SetFlags(-1)
 	log.SetPrefix("redis query = ")
 	keyActiveSeller = "active_seller_daily:" + keyActiveSeller
 	log.Println(keyActiveSeller)
 
-	result, _ := self.RedisDb.Get(keyActiveSeller).Result()
+	result, _ := redisConn.Get(keyActiveSeller).Result()
 
 	return result
 }
 
 //checking the input id in redis exist or not
-func (self ActiveSeller) IsExist(shopId int64, date time.Time) bool {
+func (self *ActiveSeller) IsExist(shopId int64, date time.Time) bool {
 	//format time now to yyy-mm-dd
 	formatTime := date.Format("2006-01-02")
 
 	keyActiveSeller := "active_seller_daily:" + formatTime
 
-	result, err := self.RedisDb.GetBit(keyActiveSeller, shopId).Result()
+	result, err := redisConn.GetBit(keyActiveSeller, shopId).Result()
 
 	if err != nil {
 		log.Println("Error IsIdExist = ", err.Error())
@@ -50,20 +59,20 @@ func (self ActiveSeller) IsExist(shopId int64, date time.Time) bool {
 }
 
 //insert active seller
-func (self ActiveSeller) InsertActiveSeller(shopdId int64) {
+func (self *ActiveSeller) InsertActiveSeller() {
 	//format time now to yyy-mm-dd
 	t := time.Now().Local()
 	formatTime := t.Format("2006-01-02")
 
 	keyActiveSeller := "active_seller_daily:" + formatTime
 
-	_, err := self.RedisDb.SetBit(keyActiveSeller, userId, 1).Result()
+	_, err := redisConn.SetBit(keyActiveSeller, self.ShopId, 1).Result()
 	if err != nil {
 		log.Println("Error Insert = ", err.Error())
 	}
 
 	//use expire time 3600 seconds
 	seconds := 3600
-	self.RedisDb.Expire(keyActiveSeller, time.Duration(seconds)*time.Second)
+	redisConn.Expire(keyActiveSeller, time.Duration(seconds)*time.Second)
 
 }
