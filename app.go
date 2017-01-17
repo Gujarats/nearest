@@ -6,21 +6,26 @@ import (
 	"log"
 	"net/http"
 
+	"github.com/jmoiron/sqlx"
 	"github.com/training_project/database"
 	"github.com/training_project/model/shop"
+
 	redis "gopkg.in/redis.v4"
 	grace "gopkg.in/tokopedia/grace.v1"
 )
 
 func main() {
-	//getting list of all the connection
+	//getting list of all the connection.
 	listConnection := database.SystemConnection()
 
-	//getting redis connection convert it from interface to *redisClient
+	//getting redis connection convert it from interface to *redisClient.
 	redisConn := listConnection["redis"].(*redis.Client)
 
-	//create a model object
-	activeSeller := model.ActiveSeller{
+	// get postgre connection.
+	postgreConn := listConnection["postgre"].(*sqlx.DB)
+
+	//create a model object.
+	activeSeller := shop.ActiveSeller{
 		ShopId: 124,
 	}
 
