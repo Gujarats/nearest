@@ -5,7 +5,7 @@ package database
 //we create different types of databse connection here
 func SystemConnection() map[string]interface{} {
 	listConnection := make(map[string]interface{})
-
+	var err error
 	// create redis connection
 	redisConn := RedisHost{
 		Address:  "localhost:6379",
@@ -18,6 +18,22 @@ func SystemConnection() map[string]interface{} {
 		panic(err)
 	}
 
+	// create postgre connection
+	postgreConn := PostgreHost{
+		Driver:   "postgres",
+		Database: "postgres",
+		Username: "postgres",
+		Ssl:      "disable",
+		Password: "root",
+	}
+
+	postgreConnection, err := GetPostgreDb(&postgreConn)
+
+	if err != nil {
+		panic(err)
+	}
+
 	listConnection["redis"] = redisConnection
+	listConnection["postgre"] = postgreConnection
 	return listConnection
 }

@@ -16,7 +16,7 @@ type PostgreHost struct {
 	Database string
 	Username string
 	Ssl      string
-	Passowrd string
+	Password string
 }
 
 type PostgreSystem interface {
@@ -26,16 +26,16 @@ type PostgreSystem interface {
 
 var logger *log.Logger
 
-func (self PostgreHost) Init() {
+func (p PostgreHost) Init() {
 	logger = log.New(os.Stderr,
 		"Postgre",
 		log.Ldate|log.Ltime|log.Lshortfile)
 }
 
-func (self *PostgreHost) Connect() (*sqlx.DB, error) {
-	connection := fmt.Sprintf("user=%v password= %v dbname=%v sslmode=%v", self.Username, self.Passowrd, self.Database, self.Ssl)
+func (p *PostgreHost) Connect() (*sqlx.DB, error) {
+	connection := fmt.Sprintf("user=%v password= %v dbname=%v sslmode=%v", p.Username, p.Password, p.Database, p.Ssl)
 	db, err := sqlx.Connect(
-		self.Driver,
+		p.Driver,
 		connection)
 	if err != nil {
 		logger.Fatal(err)
@@ -43,4 +43,8 @@ func (self *PostgreHost) Connect() (*sqlx.DB, error) {
 	}
 
 	return db, nil
+}
+
+func GetPostgreDb(postgre PostgreSystem) (*sqlx.DB, error) {
+	return postgre.Connect()
 }
