@@ -8,6 +8,7 @@ import (
 
 	"github.com/jmoiron/sqlx"
 	"github.com/training_project/database"
+	"github.com/training_project/model/review"
 	"github.com/training_project/model/shop"
 
 	redis "gopkg.in/redis.v4"
@@ -38,6 +39,12 @@ func main() {
 	//insert another id
 	activeSeller.ShopId = 1
 	activeSeller.InsertActiveSeller()
+
+	//review
+	review.GetConn(postgreConn)
+
+	result := review.IsDataExist("2017-01-01", 9)
+	fmt.Printf("result db = %+v\n", result)
 
 	http.HandleFunc("/test", GetAllServices)
 	port := "8080"
