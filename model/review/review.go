@@ -7,6 +7,19 @@ import (
 	_ "github.com/lib/pq"
 )
 
+type (
+	reviewResponse struct {
+		Status  string
+		Message string
+		Data    interface{}
+	}
+
+	reviewRequest struct {
+		UserID string `json:"user_id"`
+		ShopID string `json:"shop_id"`
+	}
+)
+
 var postgres *sqlx.DB
 
 func GetConn(connection *sqlx.DB) {
