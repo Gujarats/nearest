@@ -48,10 +48,4 @@ func main() {
 		log.Panic("App Started Failed = ", err.Error())
 	}
 
-	//review
-	//review.GetConn(postgreConn)
-
-	//result := review.IsDataExist("2017-01-01", 9)
-	//fmt.Printf("result db = %+v\n", result)
-
 }
