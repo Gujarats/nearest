@@ -8,8 +8,8 @@ type (
 		}
 
 		Redis map[string]*struct {
-			Master string
-			Slave  string
+			Address string
+			Slave   string
 		}
 	}
 )
