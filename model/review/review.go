@@ -5,31 +5,33 @@ import (
 
 	"github.com/jmoiron/sqlx"
 	_ "github.com/lib/pq"
+	"github.com/training_project/model/global"
 )
 
 type (
-	reviewResponse struct {
-		Status  string
-		Message string
-		Data    interface{}
+	ReviewResponse struct {
+		global.Response
 	}
 
-	reviewRequest struct {
+	ReviewRequest struct {
 		UserID string `json:"user_id"`
 		ShopID string `json:"shop_id"`
+	}
+
+	ReviewData struct {
+		Message string
+		UserID  int64
+		ShopID  int64
 	}
 )
 
 var postgres *sqlx.DB
 
-func GetConn(connection *sqlx.DB) {
+func (r *ReviewData) GetConn(connection *sqlx.DB) {
 	postgres = connection
 }
 
-//checking if the data exist in the table ws_product_feedback
-func IsDataExist(date string, shopID int64) bool {
-	// get slave db connection
-
+func (r *ReviewData) Exist() bool {
 	query := fmt.Sprintf(
 		`
 		SELECT
@@ -39,16 +41,16 @@ func IsDataExist(date string, shopID int64) bool {
 		WHERE
 		shop_id = %d
 		`,
-		shopID,
+		r.ShopID,
 	)
 
 	result := postgres.QueryRow(query)
-	fmt.Printf("Postgre Query Row = %+v\n", result)
-
 	var data []uint8
 	result.Scan(&data)
 
-	fmt.Printf("Postgre Scan = %+v\n", data)
+	if len(data) < 1 {
+		return false
+	}
 
 	if data[0] != 'x' {
 		return false
