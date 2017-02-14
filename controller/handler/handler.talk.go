@@ -1,13 +1,14 @@
-package handler
+package handlerTest
 
 import (
 	"encoding/json"
-	"github.com/julienschmidt/httprouter"
-	"github.com/training_project/controller"
-	"github.com/training_project/model"
 	"log"
 	"net/http"
 	"strconv"
+
+	"github.com/julienschmidt/httprouter"
+	"github.com/training_project/controller"
+	"github.com/training_project/model"
 )
 
 func ReadTalks(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
