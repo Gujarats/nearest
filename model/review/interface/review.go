@@ -13,11 +13,14 @@ type ReviewDataMock struct {
 	ShopID  int64
 }
 
-func (r *ReviewDataMock) GetConn(connection *sqlx.DB) {
-
-}
+// below is bunch of the mehod that mocking the real result
 
 // return true for mocking data exist
 func (r *ReviewDataMock) Exist() bool {
 	return true
+}
+
+// Get something cool
+func (r *ReviewDataMock) GetConn(connection *sqlx.DB) {
+
 }
