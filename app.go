@@ -1,13 +1,16 @@
 package main
 
 import (
+	"fmt"
 	"log"
+	"net/http"
 
+	"github.com/jmoiron/sqlx"
 	"github.com/training_project/config"
+	"github.com/training_project/controller/review"
 	"github.com/training_project/database"
-	"github.com/training_project/model/shop"
+	reviewModel "github.com/training_project/model/review"
 
-	redis "gopkg.in/redis.v4"
 	logging "gopkg.in/tokopedia/logging.v1"
 )
 
@@ -27,25 +30,23 @@ func main() {
 	listConnection := database.SystemConnection()
 
 	//getting redis connection convert it from interface to *redisClient.
-	redisConn := listConnection["redis"].(*redis.Client)
+	//redisConn := listConnection["redis"].(*redis.Client)
 
 	// get postgre connection.
-	//postgreConn := listConnection["postgre"].(*sqlx.DB)
+	postgreConn := listConnection["postgre"].(*sqlx.DB)
 
-	//create a model object.
-	activeSeller := shop.ActiveSeller{
-		ShopId: 124,
+	//pass to model
+	reviewStruct := &reviewModel.ReviewData{}
+	reviewStruct.GetConn(postgreConn)
+
+	http.HandleFunc("/", review.CheckDataExist)
+
+	port := ":8080"
+	fmt.Println("App Started on port = ", port)
+	err := http.ListenAndServe(port, nil)
+	if err != nil {
+		log.Panic("App Started Failed = ", err.Error())
 	}
-
-	//Get the connection and insert the value
-	activeSeller.GetConn(redisConn)
-
-	//insert the id
-	activeSeller.InsertActiveSeller()
-
-	//insert another id
-	activeSeller.ShopId = 1
-	activeSeller.InsertActiveSeller()
 
 	//review
 	//review.GetConn(postgreConn)
