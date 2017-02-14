@@ -1,19 +1,26 @@
 package main
 
 import (
-	"encoding/json"
-	"fmt"
 	"log"
-	"net/http"
 
-	"github.com/jmoiron/sqlx"
+	"github.com/training_project/config"
 	"github.com/training_project/database"
-	"github.com/training_project/model/review"
 	"github.com/training_project/model/shop"
 
 	redis "gopkg.in/redis.v4"
-	grace "gopkg.in/tokopedia/grace.v1"
+	logging "gopkg.in/tokopedia/logging.v1"
 )
+
+var cfg config.Config
+
+func init() {
+	// get config from database.ini
+	// assigne to global variable cfg
+	ok := logging.ReadModuleConfig(&cfg, "/etc/test", "test") || logging.ReadModuleConfig(&cfg, "config", "test")
+	if !ok {
+		log.Fatalln("failed to read config")
+	}
+}
 
 func main() {
 	//getting list of all the connection.
@@ -23,7 +30,7 @@ func main() {
 	redisConn := listConnection["redis"].(*redis.Client)
 
 	// get postgre connection.
-	postgreConn := listConnection["postgre"].(*sqlx.DB)
+	//postgreConn := listConnection["postgre"].(*sqlx.DB)
 
 	//create a model object.
 	activeSeller := shop.ActiveSeller{
@@ -41,32 +48,9 @@ func main() {
 	activeSeller.InsertActiveSeller()
 
 	//review
-	review.GetConn(postgreConn)
+	//review.GetConn(postgreConn)
 
-	result := review.IsDataExist("2017-01-01", 9)
-	fmt.Printf("result db = %+v\n", result)
+	//result := review.IsDataExist("2017-01-01", 9)
+	//fmt.Printf("result db = %+v\n", result)
 
-	http.HandleFunc("/test", GetAllServices)
-	port := "8080"
-	log.Fatal(grace.Serve(fmt.Sprintf(":%s", port), nil))
-}
-
-type responseBrow struct {
-	Status string `json:"status"`
-}
-
-func GetAllServices(w http.ResponseWriter, r *http.Request) {
-	allServices := responseBrow{
-		Status: "hello",
-	}
-
-	json, err := json.Marshal(allServices)
-
-	if err != nil {
-		log.Panic(err)
-		return
-	}
-
-	w.Header().Set("Content-Type", "application/json")
-	w.Write([]byte(json))
 }
