@@ -2,7 +2,6 @@ package review
 
 import (
 	"encoding/json"
-	"fmt"
 	"net/http"
 	"strconv"
 
@@ -17,10 +16,10 @@ func CheckDataExist(w http.ResponseWriter, r *http.Request) {
 
 	// check required parameters
 	shopIDString := r.FormValue("shop_id")
-	fmt.Println("shop_id = ", shopIDString)
 
 	if shopIDString == "" {
-		fmt.Println("empty params")
+		// create failed response
+		setResponse(w, "Failed", "Params Empty")
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
@@ -28,7 +27,8 @@ func CheckDataExist(w http.ResponseWriter, r *http.Request) {
 	//conver parameters to specific type data
 	shopID, err := strconv.ParseInt(shopIDString, 10, 64)
 	if err != nil {
-		fmt.Println("Error convert params")
+		// create failed response
+		setResponse(w, "Failed", "Error parsing params")
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
@@ -39,24 +39,22 @@ func CheckDataExist(w http.ResponseWriter, r *http.Request) {
 	reviewInterface := reviewStruct.GetStruct()
 
 	if !reviewInterface.Exist() {
-
 		// create failed response
-		resp := global.Response{}
-		resp.Status = "Failed"
-		resp.Message = "Data is Not Exist"
-
-		json.NewEncoder(w).Encode(resp)
+		setResponse(w, "Failed", "Data is Not Exist")
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
 
 	// create succes response
-	resp := global.Response{}
-	resp.Status = "Success"
-	resp.Message = "Data Exist"
-
-	json.NewEncoder(w).Encode(resp)
+	setResponse(w, "Succes", "Data Exist")
 	w.WriteHeader(http.StatusOK)
 	return
 
+}
+
+func setResponse(w http.ResponseWriter, Status string, Message string) {
+	resp := global.Response{}
+	resp.Status = Status
+	resp.Message = Message
+	json.NewEncoder(w).Encode(resp)
 }
