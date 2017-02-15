@@ -58,7 +58,7 @@ func TestEndPointSatusOk(t *testing.T) {
 
 }
 
-func TEstEndPointStatusBadReq(t *testing.T) {
+func TestEndPointStatusBadReq(t *testing.T) {
 	// create data body
 	data := url.Values{}
 	data.Add("shop_id", "12342")
@@ -73,6 +73,7 @@ func TEstEndPointStatusBadReq(t *testing.T) {
 	reviewMock := reviewMock.ReviewDataMock{IsDataExist: false}
 	reviewInstance.SetInstance(reviewMock)
 
+	//test the handler
 	CheckDataExist(resp, req)
 
 	if resp.Code != http.StatusBadRequest {

@@ -19,8 +19,8 @@ func CheckDataExist(w http.ResponseWriter, r *http.Request) {
 
 	if shopIDString == "" {
 		// create failed response
-		setResponse(w, "Failed", "Params Empty")
 		w.WriteHeader(http.StatusBadRequest)
+		setResponse(w, "Failed", "Params Empty")
 		return
 	}
 
@@ -28,8 +28,8 @@ func CheckDataExist(w http.ResponseWriter, r *http.Request) {
 	shopID, err := strconv.ParseInt(shopIDString, 10, 64)
 	if err != nil {
 		// create failed response
-		setResponse(w, "Failed", "Error parsing params")
 		w.WriteHeader(http.StatusBadRequest)
+		setResponse(w, "Failed", "Error parsing params")
 		return
 	}
 
@@ -40,14 +40,14 @@ func CheckDataExist(w http.ResponseWriter, r *http.Request) {
 
 	if !review.Exist() {
 		// create failed response
-		setResponse(w, "Failed", "Data is Not Exist")
 		w.WriteHeader(http.StatusBadRequest)
+		setResponse(w, "Failed", "Data is Not Exist")
 		return
 	}
 
 	// create succes response
-	setResponse(w, "Succes", "Data Exist")
 	w.WriteHeader(http.StatusOK)
+	setResponse(w, "Succes", "Data Exist")
 	return
 
 }

@@ -1,15 +1,18 @@
 package reviewInstance
 
 import (
-	"log"
-
 	"github.com/training_project/model/review"
 	"github.com/training_project/model/review/interface"
 	"github.com/training_project/model/review/mock"
+	"github.com/training_project/util/logger"
 )
 
 var ReviewInstance reviewInterface.ReviewInterface
 var InputReviewStruct interface{}
+
+func init() {
+	logger.InitLogger("Review Instance", "../../logs/", "reviewInstace.txt")
+}
 
 func SetInstance(inputReviewStruct interface{}) {
 	InputReviewStruct = inputReviewStruct
@@ -23,10 +26,7 @@ func SetInstance(inputReviewStruct interface{}) {
 		ReviewInstance = &reviewData
 		break
 	default:
-		// TODO : use an error print here.
-		// because we don't need others case.
-		// if non the case above meet then execute fatal error.
-		log.Fatalln("Error Pass struct")
+		logger.Trace.Fatalln("Error Pass struct")
 		break
 	}
 }
@@ -42,7 +42,7 @@ func PassParams(shopID int64) {
 
 func GetReviewInstance() reviewInterface.ReviewInterface {
 	if ReviewInstance == nil {
-		log.Fatalln("Error Review Instance Null")
+		logger.Trace.Fatalln("Error Review Instance Null")
 	}
 	return ReviewInstance
 }

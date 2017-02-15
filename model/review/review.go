@@ -32,6 +32,8 @@ func (r *ReviewData) GetConn(connection *sqlx.DB) {
 }
 
 func (r *ReviewData) Exist() bool {
+	// TODO :  checking the shopID value is nil or not.
+	// it is a good way to check the value before go to the execution
 	query := fmt.Sprintf(
 		`
 		SELECT
