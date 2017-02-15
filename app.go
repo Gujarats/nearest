@@ -36,8 +36,8 @@ func main() {
 	postgreConn := listConnection["postgre"].(*sqlx.DB)
 
 	//pass to model
-	reviewStruct := &reviewModel.ReviewData{}
-	reviewStruct.GetConn(postgreConn)
+	reviewData := &reviewModel.ReviewData{}
+	reviewData.GetConn(postgreConn)
 
 	http.HandleFunc("/", review.CheckDataExist)
 
