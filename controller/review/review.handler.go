@@ -5,8 +5,8 @@ import (
 	"net/http"
 	"strconv"
 
-	"github.com/training_project/controller/review/struct"
 	"github.com/training_project/model/global"
+	"github.com/training_project/model/review/instance"
 )
 
 func CheckDataExist(w http.ResponseWriter, r *http.Request) {
@@ -33,12 +33,12 @@ func CheckDataExist(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	reviewStruct.PassParams(shopID)
+	reviewInstance.PassParams(shopID)
 
 	// passing parameters to struct Data
-	reviewInterface := reviewStruct.GetStruct()
+	review := reviewInstance.GetReviewInstance()
 
-	if !reviewInterface.Exist() {
+	if !review.Exist() {
 		// create failed response
 		setResponse(w, "Failed", "Data is Not Exist")
 		w.WriteHeader(http.StatusBadRequest)
