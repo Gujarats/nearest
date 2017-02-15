@@ -10,7 +10,7 @@ import (
 
 type (
 	ReviewResponse struct {
-		global.Response
+		global.Response // use global.Response for consistence response
 	}
 
 	ReviewRequest struct {
