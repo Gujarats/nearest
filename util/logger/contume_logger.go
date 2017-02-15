@@ -45,7 +45,7 @@ func createLogFile(prefix, filePath, fileName string) (*os.File, error) {
 func PrintLog(errorLog string) {
 	//assign to global variable
 	if filePathVar == "" || fileNameVar == "" || prefixVar == "" {
-		trace.Fatalln("Error file path and Name empty")
+		trace.Fatalln("Error file path and Name empty prefix Cannot be Empty")
 	}
 
 	f, err := createLogFile(prefixVar, filePathVar, fileNameVar)

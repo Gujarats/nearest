@@ -1,9 +1,17 @@
 package logger
 
 import (
+	"fmt"
 	"os"
 	"testing"
 )
+
+func init() {
+	filePath := "/home/gujarat/testLog/"
+	fileName := "hello.txt"
+	prefix := "TEST :: "
+	InitLogger(prefix, filePath, fileName)
+}
 
 func check(t *testing.T, err error) {
 	if err != nil {
@@ -17,7 +25,7 @@ func printErrorTest(t *testing.T, actual, expected interface{}) {
 
 // checking if file created is exist
 func TestCreateLogFile(t *testing.T) {
-	_, err := CreateLogFile("/home/gujarat/testLog/", "hello.txt")
+	_, err := createLogFile("Test :: ", "/home/gujarat/testLog/", "hello.txt")
 	check(t, err)
 
 	//checking file location
@@ -30,8 +38,7 @@ func TestWriteLog(t *testing.T) {
 	filePath := "/home/gujarat/testLog/"
 	fileName := "hello.txt"
 	inputData := "data log here"
-
-	WriteLog(inputData, filePath, fileName)
+	PrintLog(inputData)
 
 	//checking file location
 	_, err := os.Stat(filePath + fileName)
@@ -50,4 +57,7 @@ func TestWriteLog(t *testing.T) {
 		t.Error("Log Data is Empty")
 	}
 
+	//convert byte to string
+	stringResult := string(result)
+	fmt.Println("Result Read files = ", stringResult)
 }
