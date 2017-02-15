@@ -11,7 +11,8 @@ var ReviewInstance reviewInterface.ReviewInterface
 var InputReviewStruct interface{}
 
 func init() {
-	logger.InitLogger("Review Instance", "../../logs/", "reviewInstace.txt")
+	// setup logger location and prin the bugs and specific location
+	logger.InitLogger("Review Instance :: ", "../../logs/", "reviewInstace.txt")
 }
 
 func SetInstance(inputReviewStruct interface{}) {
@@ -26,7 +27,7 @@ func SetInstance(inputReviewStruct interface{}) {
 		ReviewInstance = &reviewData
 		break
 	default:
-		logger.Trace.Fatalln("Error Pass struct")
+		logger.FatalLog("Error Pass struct")
 		break
 	}
 }
@@ -42,7 +43,7 @@ func PassParams(shopID int64) {
 
 func GetReviewInstance() reviewInterface.ReviewInterface {
 	if ReviewInstance == nil {
-		logger.Trace.Fatalln("Error Review Instance Null")
+		logger.FatalLog("Error Review Instance Null")
 	}
 	return ReviewInstance
 }

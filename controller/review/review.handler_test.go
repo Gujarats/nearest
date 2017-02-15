@@ -10,6 +10,7 @@ import (
 	"strconv"
 	"testing"
 
+	"github.com/training_project/model/global"
 	"github.com/training_project/model/review"
 	"github.com/training_project/model/review/instance"
 	"github.com/training_project/model/review/mock"
@@ -71,6 +72,45 @@ func TestEndPointStatusBadReq(t *testing.T) {
 	resp := httptest.NewRecorder()
 
 	reviewMock := reviewMock.ReviewDataMock{IsDataExist: false}
+	reviewInstance.SetInstance(reviewMock)
+
+	//test the handler
+	CheckDataExist(resp, req)
+
+	if resp.Code != http.StatusBadRequest {
+		t.Errorf("Error Code !! actual : %d, expected : %d\n", resp.Code, http.StatusBadRequest)
+	}
+
+	// check the response
+	respData := resp.Body.Bytes()
+	if respData == nil {
+		t.Error("Error Body result Empty")
+	}
+
+	reviewResponse := review.ReviewResponse{}
+	err := json.Unmarshal(respData, &reviewResponse)
+	if err != nil {
+		t.Error(err)
+	}
+
+	if reviewResponse.Message != "Data is Not Exist" {
+		t.Errorf("Error response:: actual = %v, expected = %v\n", reviewResponse.Message, "Data Exist")
+	}
+}
+
+func TestEndPointTest(t *testing.T) {
+	// create data body
+	data := url.Values{}
+	data.Add("shop_id", "12342")
+
+	// create request
+	req := httptest.NewRequest("POST", "/", bytes.NewBufferString(data.Encode()))
+	req.Header.Add("Content-Type", "application/x-www-form-urlencoded")
+	req.Header.Add("Content-Length", strconv.Itoa(len(data.Encode())))
+
+	resp := httptest.NewRecorder()
+
+	reviewMock := global.Response{Message: "asdf"}
 	reviewInstance.SetInstance(reviewMock)
 
 	//test the handler
