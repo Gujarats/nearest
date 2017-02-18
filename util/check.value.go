@@ -27,6 +27,6 @@ func CheckAttribute(input interface{}) bool {
 	return true
 }
 
-func IsZeroOfUnderlyingType(x interface{}) bool {
-	return x == reflect.Zero(reflect.TypeOf(x)).Interface()
+func IsZeroOfUnderlyingType(objectValue interface{}) bool {
+	return reflect.DeepEqual(objectValue, reflect.Zero(reflect.TypeOf(x)).Interface())
 }
