@@ -10,6 +10,7 @@ import (
 	"github.com/training_project/controller/review"
 	"github.com/training_project/database"
 	reviewModel "github.com/training_project/model/review"
+	"github.com/training_project/util/logger"
 
 	logging "gopkg.in/tokopedia/logging.v1"
 )
@@ -23,6 +24,8 @@ func init() {
 	if !ok {
 		log.Fatalln("failed to read config")
 	}
+
+	logger.InitLogger("App :: ", "./logs", "App.txt")
 }
 
 func main() {
@@ -40,6 +43,7 @@ func main() {
 	reviewData.GetConn(postgreConn)
 
 	http.HandleFunc("/", review.CheckDataExist)
+	http.HandleFunc("/driver", review.CheckDataExist)
 
 	port := ":8080"
 	fmt.Println("App Started on port = ", port)
