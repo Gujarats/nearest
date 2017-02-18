@@ -38,6 +38,6 @@ func SystemConnection() map[string]interface{} {
 
 	listConnection["redis"] = redisConnection
 	listConnection["postgre"] = postgreConnection
-	listConnection["mongo"] = mongoConnection
+	listConnection["mongodb"] = mongoConnection
 	return listConnection
 }

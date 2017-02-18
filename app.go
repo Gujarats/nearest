@@ -7,11 +7,16 @@ import (
 
 	"github.com/jmoiron/sqlx"
 	"github.com/training_project/config"
+	"github.com/training_project/controller/driver"
 	"github.com/training_project/controller/review"
 	"github.com/training_project/database"
+
+	driverModel "github.com/training_project/model/driver"
 	reviewModel "github.com/training_project/model/review"
+
 	"github.com/training_project/util/logger"
 
+	mgo "gopkg.in/mgo.v2"
 	logging "gopkg.in/tokopedia/logging.v1"
 )
 
@@ -37,13 +42,17 @@ func main() {
 
 	// get postgre connection.
 	postgreConn := listConnection["postgre"].(*sqlx.DB)
+	mongoConn := listConnection["mongodb"].(*mgo.Session)
 
 	//pass to model
 	reviewData := &reviewModel.ReviewData{}
 	reviewData.GetConn(postgreConn)
 
+	driverData := &driverModel.DriverData{}
+	driverData.GetConn(mongoConn)
+
 	http.HandleFunc("/", review.CheckDataExist)
-	http.HandleFunc("/driver", review.CheckDataExist)
+	http.HandleFunc("/driver", driver.InsertDriver)
 
 	port := ":8080"
 	fmt.Println("App Started on port = ", port)

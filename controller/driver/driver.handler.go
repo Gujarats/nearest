@@ -27,10 +27,18 @@ func InsertDriver(w http.ResponseWriter, r *http.Request) {
 		//return Bad response
 		w.WriteHeader(http.StatusBadRequest)
 		global.SetResponse(w, "Failed", "Required Params Empty")
+		return
 	}
 
 	// convert string to bool
 	statusBool, err := strconv.ParseBool(status)
+	if err != nil {
+		//return Bad response
+		logger.PrintLog("Failed to Parse Boolean")
+		w.WriteHeader(http.StatusBadRequest)
+		global.SetResponse(w, "Failed", "Parse Boolean Erro")
+		return
+	}
 	logger.CheckError("Driver handler", err)
 
 	// get Driver instance
@@ -41,5 +49,5 @@ func InsertDriver(w http.ResponseWriter, r *http.Request) {
 	//return succes response
 	w.WriteHeader(http.StatusOK)
 	global.SetResponse(w, "Succes", "Driver Inserted")
-
+	return
 }
