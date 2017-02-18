@@ -10,6 +10,7 @@ var filePathVar string
 var fileNameVar string
 var prefixVar string
 
+// use this function first before calling others.
 func InitLogger(prefix, filePath, fileName string) {
 	setPrefix(prefix)
 	createLogFile(prefix, filePath, fileName)
@@ -75,4 +76,11 @@ func FatalLog(errorLog string) {
 	// save the log out put to file
 	trace.SetOutput(f)
 	trace.Fatalln(errorLog, err)
+}
+
+//check the error if exist
+func CheckError(prefix string, err error) {
+	if err != nil {
+		FatalLog(prefix + " : " + err.Error())
+	}
 }
