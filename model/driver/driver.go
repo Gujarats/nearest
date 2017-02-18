@@ -41,9 +41,11 @@ func (d *DriverData) Insert(name, lat, lon string, status bool) {
 func (d *DriverData) Find(name string) *DriverData {
 	collection := mongo.DB("Driver").C("driver")
 
-	err := collection.Find(bson.M{"Name": name}).One(d)
-
-	logger.CheckError("Model Driver", err)
+	err := collection.Find(bson.M{"name": name}).One(d)
+	// return empy struct if err
+	if err != nil {
+		return &DriverData{}
+	}
 
 	return d
 }
