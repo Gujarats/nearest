@@ -12,9 +12,50 @@ import (
 	"github.com/training_project/model/global"
 )
 
-func FindDriver(w http.ResponseWriter, r *http.Request) {
+// find specific driver with their ID or name.
+// if the desired data didn't exist then insert new data
+func UpdateDriver(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Access-Control-Allow-Methods", "GET")
 
-	w.Header().Set("Acces-Controler-Allow-Methods", "GET")
+	name := r.FormValue("name")
+	lat := r.FormValue("latitude")
+	lon := r.FormValue("longitude")
+	status := r.FormValue("status")
+
+	isAllExist := util.CheckValue(name, lat, lon, status)
+	if !isAllExist {
+		logger.PrintLog("Required Params Empty")
+
+		//return Bad response
+		w.WriteHeader(http.StatusBadRequest)
+		global.SetResponse(w, "Failed", "Required Params Empty")
+		return
+	}
+
+	// convert string to bool
+	statusBool, err := strconv.ParseBool(status)
+	if err != nil {
+		//return Bad response
+		logger.PrintLog("Failed to Parse Boolean")
+		w.WriteHeader(http.StatusBadRequest)
+		global.SetResponse(w, "Failed", "Parse Boolean Erro")
+		return
+	}
+
+	// get instance
+	driver := driverInstance.GetInstance()
+
+	driver.Update(name, lat, lon, statusBool)
+
+	//return succes response
+	w.WriteHeader(http.StatusOK)
+	global.SetResponse(w, "Succes", "Driver Inserted")
+	return
+
+}
+
+func FindDriver(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Access-Control-Allow-Methods", "GET")
 
 	name := r.FormValue("name")
 
@@ -48,7 +89,7 @@ func FindDriver(w http.ResponseWriter, r *http.Request) {
 }
 
 func InsertDriver(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Acces-Controler-Allow-Methods", "POST")
+	w.Header().Set("Access-Control-Allow-Methods", "POST")
 
 	// getting the parameters
 	name := r.FormValue("name")
@@ -56,8 +97,8 @@ func InsertDriver(w http.ResponseWriter, r *http.Request) {
 	lon := r.FormValue("longitude")
 	status := r.FormValue("status")
 
-	checkValue := util.CheckValue(name, lat, lon, status)
-	if !checkValue {
+	isAllExist := util.CheckValue(name, lat, lon, status)
+	if !isAllExist {
 		logger.PrintLog("Required Params Empty")
 
 		//return Bad response
@@ -75,7 +116,6 @@ func InsertDriver(w http.ResponseWriter, r *http.Request) {
 		global.SetResponse(w, "Failed", "Parse Boolean Erro")
 		return
 	}
-	logger.CheckError("Driver handler", err)
 
 	// get Driver instance
 	driver := driverInstance.GetInstance()
