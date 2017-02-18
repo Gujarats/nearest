@@ -4,11 +4,10 @@ package database
 
 import (
 	"fmt"
-	"log"
-	"os"
 
 	"github.com/jmoiron/sqlx"
 	_ "github.com/lib/pq"
+	"github.com/training_project/util/logger"
 )
 
 type PostgreHost struct {
@@ -19,32 +18,31 @@ type PostgreHost struct {
 	Password string
 }
 
+func init() {
+	logger.InitLogger("POSTGRE  :: ", "../logs", "Postgre.txt")
+}
+
 type PostgreSystem interface {
 	Init()
-	Connect() (*sqlx.DB, error)
+	Connect() *sqlx.DB
 }
-
-var logger *log.Logger
 
 func (p PostgreHost) Init() {
-	logger = log.New(os.Stderr,
-		"Postgre",
-		log.Ldate|log.Ltime|log.Lshortfile)
+
 }
 
-func (p *PostgreHost) Connect() (*sqlx.DB, error) {
+func (p *PostgreHost) Connect() *sqlx.DB {
 	connection := fmt.Sprintf("user=%v password= %v dbname=%v sslmode=%v", p.Username, p.Password, p.Database, p.Ssl)
 	db, err := sqlx.Connect(
 		p.Driver,
-		connection)
-	if err != nil {
-		logger.Fatal(err)
-		return nil, err
-	}
+		connection,
+	)
 
-	return db, nil
+	logger.CheckError("Postgre", err)
+
+	return db
 }
 
-func GetPostgreDb(postgre PostgreSystem) (*sqlx.DB, error) {
+func GetPostgreDb(postgre PostgreSystem) *sqlx.DB {
 	return postgre.Connect()
 }

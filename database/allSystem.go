@@ -27,13 +27,17 @@ func SystemConnection() map[string]interface{} {
 		Password: "root",
 	}
 
-	postgreConnection, err := GetPostgreDb(&postgreConn)
+	postgreConnection := GetPostgreDb(&postgreConn)
 
-	if err != nil {
-		panic(err)
+	//create mongodb connection
+	mongo := MongoHost{
+		Host: "127.0.0.1",
+		Port: "27017",
 	}
+	mongoConnection := mongo.Connect()
 
 	listConnection["redis"] = redisConnection
 	listConnection["postgre"] = postgreConnection
+	listConnection["mongo"] = mongoConnection
 	return listConnection
 }
