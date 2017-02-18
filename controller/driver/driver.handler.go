@@ -1,6 +1,7 @@
 package driver
 
 import (
+	"encoding/json"
 	"net/http"
 	"strconv"
 
@@ -10,6 +11,41 @@ import (
 	"github.com/training_project/model/driver/instance"
 	"github.com/training_project/model/global"
 )
+
+func FindDriver(w http.ResponseWriter, r *http.Request) {
+
+	w.Header().Set("Acces-Controler-Allow-Methods", "GET")
+
+	name := r.FormValue("name")
+
+	checkValue := util.CheckValue(name)
+	if !checkValue {
+		logger.PrintLog("Required Params Empty")
+
+		//return Bad response
+		w.WriteHeader(http.StatusBadRequest)
+		global.SetResponse(w, "Failed", "Required Params Empty")
+		return
+	}
+
+	// get instance
+	driver := driverInstance.GetInstance()
+
+	driverData := driver.Find(name)
+
+	if driverData.Name == "" {
+		//return Bad response
+		w.WriteHeader(http.StatusOK)
+		global.SetResponse(w, "Success", "Data Not Found")
+		return
+	}
+
+	//return succes response
+	w.WriteHeader(http.StatusOK)
+	response := global.Response{Status: "Success", Message: "Data Found", Data: driverData}
+	json.NewEncoder(w).Encode(response)
+	return
+}
 
 func InsertDriver(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Acces-Controler-Allow-Methods", "POST")

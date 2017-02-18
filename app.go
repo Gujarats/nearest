@@ -52,7 +52,10 @@ func main() {
 	driverData.GetConn(mongoConn)
 
 	http.HandleFunc("/", review.CheckDataExist)
+
+	// driver router
 	http.HandleFunc("/driver", driver.InsertDriver)
+	http.HandleFunc("/driver/find", driver.FindDriver)
 
 	port := ":8080"
 	fmt.Println("App Started on port = ", port)
