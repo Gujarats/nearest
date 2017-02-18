@@ -1,5 +1,7 @@
 package util
 
+import "reflect"
+
 func CheckValue(values ...string) bool {
 	for _, value := range values {
 		if value == "" {
@@ -8,4 +10,23 @@ func CheckValue(values ...string) bool {
 	}
 
 	return true
+}
+
+// passing struct and check all the attribute
+// false if there is empty value
+func CheckAttribute(input interface{}) bool {
+	object := reflect.ValueOf(input)
+
+	for index := 0; index < object.NumField(); index++ {
+
+		if IsZeroOfUnderlyingType(object.Field(index).Interface()) {
+			return false
+		}
+	}
+
+	return true
+}
+
+func IsZeroOfUnderlyingType(x interface{}) bool {
+	return x == reflect.Zero(reflect.TypeOf(x)).Interface()
 }
