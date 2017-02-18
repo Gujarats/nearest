@@ -16,7 +16,7 @@ type DriverData struct {
 var mongo *mgo.Session
 
 func init() {
-	logger.InitLogger("Model Driver", "../../logs", "Model.txt")
+	logger.InitLogger("Model Driver", "../../logs/", "Model.txt")
 }
 
 func (d *DriverData) GetConn(mongoSession *mgo.Session) {
@@ -48,4 +48,19 @@ func (d *DriverData) Find(name string) *DriverData {
 	}
 
 	return d
+}
+
+//update data if exist if not the insert it
+func (d *DriverData) Update(name, lat, lon string, status bool) {
+	d.Name = name
+	d.Lat = lat
+	d.Lon = lon
+	d.Status = status
+
+	collection := mongo.DB("Driver").C("driver")
+
+	_, err := collection.Upsert(bson.M{"name": name}, d)
+
+	logger.CheckError("Model Driver", err)
+
 }

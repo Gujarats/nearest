@@ -19,3 +19,5 @@ func (d *DriverDataMock) Insert(name, lat, lon string, status bool) {
 func (d *DriverDataMock) Find(name string) *driver.DriverData {
 	return &driver.DriverData{}
 }
+
+func (d *DriverDataMock) Update(name, lat, lon string, status bool) {}
