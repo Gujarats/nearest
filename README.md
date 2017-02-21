@@ -29,7 +29,7 @@ This package is to define all the database connection.
 <b> Controller </b>
 this package is used for declare the business logic and the hanlder for handling the incoming request.
 
-<b>Flow of the calling the code </b>
+<b>Flow code </b>
 In app.go : call all the connection database (database) -> pass it to model (model) -> call hanlder for hanlde the incoming request (controller)
 Basically liket this : main->database-> model -> handler->controller
 
