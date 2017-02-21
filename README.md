@@ -4,11 +4,11 @@ This is based on my opinion for the folder structure and the code structure.
 If you find any thing that can be improved I'm open for pull request.
 
 # Structure Folder
---> model : this is where I store database transaction like read update delete etc.
---> controller : this is where business logic or handler to handle the incoming request
---> database : all database connection define here
---> logs : this folder is used for storing the log files
---> util : all the function that will be used in all others package
+--> model : this is where I store database transaction like read update delete etc.<br><br>
+--> controller : this is where business logic or handler to handle the incoming request.<br><br>
+--> database : all database connection define here.<br><br>
+--> logs : this folder is used for storing the log files.<br><br>
+--> util : all the function that will be used in all others package.<br><br>
 
 # Code Structure
 <b> Model </b>
