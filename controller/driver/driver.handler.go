@@ -42,10 +42,15 @@ func UpdateDriver(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// convert string to float64
+	convertedFloat := util.ConvertToFloat64(lat, lon)
+	latFloat := convertedFloat[0]
+	lonFloat := convertedFloat[1]
+
 	// get instance
 	driver := driverInstance.GetInstance()
 
-	driver.Update(name, lat, lon, statusBool)
+	driver.Update(name, latFloat, lonFloat, statusBool)
 
 	//return succes response
 	w.WriteHeader(http.StatusOK)
@@ -117,10 +122,15 @@ func InsertDriver(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// convert string to float64
+	convertedFloat := util.ConvertToFloat64(lat, lon)
+	latFloat := convertedFloat[0]
+	lonFloat := convertedFloat[1]
+
 	// get Driver instance
 	driver := driverInstance.GetInstance()
 
-	driver.Insert(name, lat, lon, statusBool)
+	driver.Insert(name, latFloat, lonFloat, statusBool)
 
 	//return succes response
 	w.WriteHeader(http.StatusOK)
