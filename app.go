@@ -18,6 +18,8 @@ import (
 
 	mgo "gopkg.in/mgo.v2"
 	logging "gopkg.in/tokopedia/logging.v1"
+
+	dummy "github.com/dummy_data/driver"
 )
 
 var cfg config.Config
@@ -30,7 +32,7 @@ func init() {
 		log.Fatalln("failed to read config")
 	}
 
-	logger.InitLogger("App :: ", "./logs", "App.txt")
+	logger.InitLogger("App :: ", "./logs/", "App.txt")
 }
 
 func main() {
@@ -44,13 +46,17 @@ func main() {
 	postgreConn := listConnection["postgre"].(*sqlx.DB)
 	mongoConn := listConnection["mongodb"].(*mgo.Session)
 
-	//pass to model
+	//pass connection to model to model
 	reviewData := &reviewModel.ReviewData{}
 	reviewData.GetConn(postgreConn)
 
 	driverData := &driverModel.DriverData{}
 	driverData.GetConn(mongoConn)
 
+	// inserting dummy driver
+	insertDummyDriver(driverData)
+
+	// review router
 	http.HandleFunc("/", review.CheckDataExist)
 
 	// driver router
@@ -62,6 +68,17 @@ func main() {
 	err := http.ListenAndServe(port, nil)
 	if err != nil {
 		log.Panic("App Started Failed = ", err.Error())
+	}
+
+}
+
+// insert database 50.000 rows
+// passed deriver struct to save the data to database.
+func insertDummyDriver(driverData *driverModel.DriverData) {
+
+	dummyDrivers := dummy.GenereateDriver(50000)
+	for _, driver := range dummyDrivers {
+		driverData.Insert(driver.Name, driver.Lat, driver.Lon, driver.Status)
 	}
 
 }
