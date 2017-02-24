@@ -3,6 +3,9 @@ this is simple project for creating API using Go.
 This is based on my opinion for the folder structure and the code structure.
 If you find any thing that can be improved I'm open for pull request.
 
+# How to use and run this project ? 
+Simply by clone this project and rename the root of the folder from `API-Golang` to `training_project`.
+
 # Structure Folder
 --> model : this is where I store database transaction like read update delete etc.<br><br>
 --> controller : this is where business logic or handler to handle the incoming request.<br><br>
