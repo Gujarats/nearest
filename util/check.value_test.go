@@ -32,9 +32,11 @@ func TestCheckAttributeTrue(t *testing.T) {
 	// testing model driver
 	driverData := driver.DriverData{
 		Name:   "name",
-		Lat:    "name",
-		Lon:    "name",
 		Status: true,
+		Location: driver.GeoJson{
+			Type:        "test",
+			Coordinates: []float64{2.34, 3.34},
+		},
 	}
 
 	expected := true
@@ -51,7 +53,6 @@ func TestCheckAttributeFalse(t *testing.T) {
 	// testing model driver
 	driverData := driver.DriverData{
 		Name: "name",
-		Lon:  "ceck",
 	}
 
 	expected := false
