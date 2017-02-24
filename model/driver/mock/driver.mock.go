@@ -12,7 +12,7 @@ type DriverDataMock struct {
 func (d *DriverDataMock) GetConn(mongoSession *mgo.Session) {
 }
 
-func (d *DriverDataMock) Insert(name, lat, lon string, status bool) {
+func (d *DriverDataMock) Insert(name string, lat, lon float64, status bool) {
 
 }
 
@@ -20,4 +20,8 @@ func (d *DriverDataMock) Find(name string) *driver.DriverData {
 	return &driver.DriverData{}
 }
 
-func (d *DriverDataMock) Update(name, lat, lon string, status bool) {}
+func (d *DriverDataMock) Update(name string, lat, lon float64, status bool) {}
+
+func (d *DriverDataMock) GetNearLocation(distance int, lat, lon float64) []driver.DriverData {
+	return []driver.DriverData{}
+}

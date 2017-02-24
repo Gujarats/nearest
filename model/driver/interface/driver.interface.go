@@ -7,7 +7,8 @@ import (
 
 type DriverInterfacce interface {
 	GetConn(mongoSession *mgo.Session)
-	Insert(name string, lat string, lon string, status bool)
+	Insert(name string, lat float64, lon float64, status bool)
 	Find(name string) *driver.DriverData
-	Update(name, lat, lon string, status bool)
+	Update(name string, lat, lon float64, status bool)
+	GetNearLocation(distance int, lat, lon float64) []driver.DriverData
 }
