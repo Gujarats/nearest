@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"net/http"
 	"strconv"
+	"time"
 
 	"github.com/training_project/util"
 	"github.com/training_project/util/logger"
@@ -15,6 +16,9 @@ import (
 // find specific driver with their ID or name.
 // if the desired data didn't exist then insert new data
 func UpdateDriver(w http.ResponseWriter, r *http.Request) {
+	//start time for lenght of the process
+	startTimer := time.Now()
+
 	w.Header().Set("Access-Control-Allow-Methods", "GET")
 
 	name := r.FormValue("name")
@@ -53,18 +57,24 @@ func UpdateDriver(w http.ResponseWriter, r *http.Request) {
 	driver.Update(name, latFloat, lonFloat, statusBool)
 
 	//return succes response
+	elpasedTime := time.Since(startTimer).Seconds()
 	w.WriteHeader(http.StatusOK)
-	global.SetResponse(w, "Succes", "Driver Inserted")
+	global.SetResponseTime(w, "Succes", "Driver Inserted", elpasedTime)
 	return
 
 }
 
 func FindDriver(w http.ResponseWriter, r *http.Request) {
+	//start time for lenght of the process
+	startTimer := time.Now()
 	w.Header().Set("Access-Control-Allow-Methods", "GET")
 
-	name := r.FormValue("name")
+	lat := r.FormValue("latitude")
+	lon := r.FormValue("longitude")
+	distance := r.FormValue("distance")
 
-	checkValue := util.CheckValue(name)
+	//checking empty value
+	checkValue := util.CheckValue(lat, lon, distance)
 	if !checkValue {
 		logger.PrintLog("Required Params Empty")
 
@@ -74,26 +84,37 @@ func FindDriver(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	floatNumbers := util.ConvertToFloat64(lat, lon)
+	latFloat := floatNumbers[0]
+	lonFloat := floatNumbers[1]
+
+	intNumbers := util.ConvertToInt64(distance)
+	distanceInt := intNumbers[0]
+
 	// get instance
 	driver := driverInstance.GetInstance()
+	driverDatas := driver.GetNearLocation(distanceInt, latFloat, lonFloat)
 
-	driverData := driver.Find(name)
-
-	if driverData.Name == "" {
+	if len(driverDatas) == 0 {
 		//return Bad response
 		w.WriteHeader(http.StatusOK)
-		global.SetResponse(w, "Success", "Data Not Found")
+		elapsedTime := time.Since(startTimer).Seconds()
+		response := global.Response{Status: "Success", Message: "Data Found", Latency: elapsedTime, Data: driverDatas}
+		json.NewEncoder(w).Encode(response)
 		return
 	}
 
 	//return succes response
 	w.WriteHeader(http.StatusOK)
-	response := global.Response{Status: "Success", Message: "Data Found", Data: driverData}
+	elapsedTime := time.Since(startTimer).Seconds()
+	response := global.Response{Status: "Success", Message: "Data Found", Latency: elapsedTime, Data: driverDatas}
 	json.NewEncoder(w).Encode(response)
 	return
 }
 
 func InsertDriver(w http.ResponseWriter, r *http.Request) {
+	//start time for lenght of the process
+	startTimer := time.Now()
 	w.Header().Set("Access-Control-Allow-Methods", "POST")
 
 	// getting the parameters
@@ -134,6 +155,8 @@ func InsertDriver(w http.ResponseWriter, r *http.Request) {
 
 	//return succes response
 	w.WriteHeader(http.StatusOK)
-	global.SetResponse(w, "Succes", "Driver Inserted")
+	elapsedTime := time.Since(startTimer).Seconds()
+	response := global.Response{Status: "Success", Message: "Data Inserted", Latency: elapsedTime}
+	json.NewEncoder(w).Encode(response)
 	return
 }
