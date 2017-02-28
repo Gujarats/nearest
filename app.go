@@ -73,7 +73,7 @@ func main() {
 }
 
 // insert database 50.000 rows
-// passed deriver struct to save the data to database.
+// passed driver struct to save the data to database.
 func insertDummyDriver(driverData *driverModel.DriverData) {
 
 	dummyDrivers := dummy.GenereateDriver(50000)
