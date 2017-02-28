@@ -28,7 +28,7 @@ func (d *DriverData) GetConn(mongoSession *mgo.Session) {
 	mongo = mongoSession
 }
 
-func (d *DriverData) GetNearLocation(distance int, lat, lon float64) []DriverData {
+func (d *DriverData) GetNearLocation(distance int64, lat, lon float64) []DriverData {
 	collection := mongo.DB("Driver").C("driver")
 
 	var driverLocation []DriverData

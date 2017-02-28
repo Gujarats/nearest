@@ -10,5 +10,5 @@ type DriverInterfacce interface {
 	Insert(name string, lat float64, lon float64, status bool)
 	Find(name string) *driver.DriverData
 	Update(name string, lat, lon float64, status bool)
-	GetNearLocation(distance int, lat, lon float64) []driver.DriverData
+	GetNearLocation(distance int64, lat, lon float64) []driver.DriverData
 }

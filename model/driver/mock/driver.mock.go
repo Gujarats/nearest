@@ -22,6 +22,6 @@ func (d *DriverDataMock) Find(name string) *driver.DriverData {
 
 func (d *DriverDataMock) Update(name string, lat, lon float64, status bool) {}
 
-func (d *DriverDataMock) GetNearLocation(distance int, lat, lon float64) []driver.DriverData {
+func (d *DriverDataMock) GetNearLocation(distance int64, lat, lon float64) []driver.DriverData {
 	return []driver.DriverData{}
 }
