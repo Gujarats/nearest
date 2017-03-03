@@ -17,7 +17,7 @@ import (
 type testObject struct {
 	Lat          float64
 	Lon          float64
-	Distance     int // in meters
+	Distance     int64 // in meters
 	ExpectedRows int
 }
 
@@ -41,8 +41,8 @@ func init() {
 // Test case :  assuming if the database has driver's location
 func TestGetNearDriver(t *testing.T) {
 	testObjects := []testObject{
-		{Lat: 48.8536111, Lon: 2.2993946, Distance: 300, ExpectedRows: 4},
-		{Lat: 48.8536111, Lon: 2.2993946, Distance: 300, ExpectedRows: 7},
+		{Lat: 48.8588377, Lon: 2.2775176, Distance: 300, ExpectedRows: 4},
+		{Lat: 48.8588377, Lon: 2.2775176, Distance: 300, ExpectedRows: 3},
 	}
 
 	for _, test := range testObjects {

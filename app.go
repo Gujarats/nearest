@@ -17,7 +17,6 @@ import (
 	"github.com/training_project/util/logger"
 
 	mgo "gopkg.in/mgo.v2"
-	logging "gopkg.in/tokopedia/logging.v1"
 
 	dummy "github.com/dummy_data/driver"
 )
@@ -25,13 +24,6 @@ import (
 var cfg config.Config
 
 func init() {
-	// get config from database.ini
-	// assigne to global variable cfg
-	ok := logging.ReadModuleConfig(&cfg, "/etc/test", "test") || logging.ReadModuleConfig(&cfg, "config", "test")
-	if !ok {
-		log.Fatalln("failed to read config")
-	}
-
 	logger.InitLogger("App :: ", "./logs/", "App.txt")
 }
 
@@ -54,7 +46,7 @@ func main() {
 	driverData.GetConn(mongoConn)
 
 	// inserting dummy driver
-	insertDummyDriver(driverData)
+	//	insertDummyDriver(driverData)
 
 	// review router
 	http.HandleFunc("/", review.CheckDataExist)
