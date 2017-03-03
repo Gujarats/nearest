@@ -15,7 +15,7 @@ import (
 	"github.com/training_project/model/global"
 )
 
-func TestDriverHandlerOK(t *testing.T) {
+func TestDriverHandlerBadRequestInputViolation(t *testing.T) {
 	// create body params
 	body := url.Values{}
 	body.Set("name", "driver1")
@@ -35,8 +35,8 @@ func TestDriverHandlerOK(t *testing.T) {
 
 	InsertDriver(w, req)
 
-	if w.Code != http.StatusOK {
-		t.Errorf("Error actual = %v, expected = %v\n", w.Code, http.StatusOK)
+	if w.Code != http.StatusBadRequest {
+		t.Errorf("Error actual = %v, expected = %v\n", w.Code, http.StatusBadRequest)
 	}
 
 	// check the response
@@ -57,7 +57,9 @@ func TestDriverHandlerOK(t *testing.T) {
 func TestFindDriverOK(t *testing.T) {
 	// create body params
 	body := url.Values{}
-	body.Set("name", "driver1")
+	body.Set("latitude", "48.8588377")
+	body.Set("longitude", "2.2775176")
+	body.Set("distance", "200")
 
 	//we pass a dummy value to pass the required params
 	req := httptest.NewRequest("POST", "/driver/find", bytes.NewBufferString(body.Encode()))
@@ -95,8 +97,8 @@ func TestUpdateDriverOK(t *testing.T) {
 	// create body params
 	body := url.Values{}
 	body.Set("name", "driver1")
-	body.Set("latitude", "latExample")
-	body.Set("longitude", "lonExample")
+	body.Set("latitude", "48.8588377")
+	body.Set("longitude", "2.2775176")
 	body.Set("status", "true")
 
 	//we pass a dummy value to pass the required params

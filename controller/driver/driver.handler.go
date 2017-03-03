@@ -47,7 +47,13 @@ func UpdateDriver(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// convert string to float64
-	convertedFloat := util.ConvertToFloat64(lat, lon)
+	convertedFloat, err := util.ConvertToFloat64(lat, lon)
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		global.SetResponse(w, "Failed", "Failed to conver float value")
+		return
+	}
+
 	latFloat := convertedFloat[0]
 	lonFloat := convertedFloat[1]
 
@@ -84,11 +90,21 @@ func FindDriver(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	floatNumbers := util.ConvertToFloat64(lat, lon)
+	floatNumbers, err := util.ConvertToFloat64(lat, lon)
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		global.SetResponse(w, "Failed", "Failed to convert float value")
+		return
+	}
 	latFloat := floatNumbers[0]
 	lonFloat := floatNumbers[1]
 
-	intNumbers := util.ConvertToInt64(distance)
+	intNumbers, err := util.ConvertToInt64(distance)
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		global.SetResponse(w, "Failed", "Failed to convert integer value")
+		return
+	}
 	distanceInt := intNumbers[0]
 
 	// get instance
@@ -144,7 +160,12 @@ func InsertDriver(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// convert string to float64
-	convertedFloat := util.ConvertToFloat64(lat, lon)
+	convertedFloat, err := util.ConvertToFloat64(lat, lon)
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		global.SetResponse(w, "Failed", "Failed to convert float value")
+		return
+	}
 	latFloat := convertedFloat[0]
 	lonFloat := convertedFloat[1]
 
