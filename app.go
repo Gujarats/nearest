@@ -7,11 +7,11 @@ import (
 
 	"github.com/Gujarats/API-Golang/config"
 	"github.com/Gujarats/API-Golang/controller/driver"
-	"github.com/Gujarats/API-Golang/controller/review"
 	"github.com/Gujarats/API-Golang/database"
 	"github.com/jmoiron/sqlx"
 
 	driverModel "github.com/Gujarats/API-Golang/model/driver"
+	driverInterface "github.com/Gujarats/API-Golang/model/driver/interface"
 	reviewModel "github.com/Gujarats/API-Golang/model/review"
 
 	"github.com/Gujarats/API-Golang/util/logger"
@@ -40,18 +40,16 @@ func main() {
 	reviewData := &reviewModel.ReviewData{}
 	reviewData.GetConn(postgreConn)
 
+	// set driver interface
+	var driverInterface driverInterface.DriverInterfacce
 	driverData := &driverModel.DriverData{}
-	driverData.GetConn(mongoConn)
+	driverInterface = driverData
 
-	// inserting dummy driver
-	//	insertDummyDriver(driverData)
-
-	// review router
-	http.HandleFunc("/", review.CheckDataExist)
+	driverInterface.GetConn(mongoConn)
 
 	// driver router
-	http.HandleFunc("/driver", driver.InsertDriver)
-	http.HandleFunc("/driver/find", driver.FindDriver)
+	http.Handle("/driver/find", driver.FindDriver(driverInterface))
+	http.Handle("/driver/update", driver.UpdateDriver(driverInterface))
 
 	port := ":8080"
 	fmt.Println("App Started on port = ", port)

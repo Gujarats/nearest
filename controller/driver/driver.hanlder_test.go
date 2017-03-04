@@ -10,7 +10,7 @@ import (
 	"strconv"
 	"testing"
 
-	"github.com/Gujarats/API-Golang/model/driver/instance"
+	"github.com/Gujarats/API-Golang/model/driver/interface"
 	"github.com/Gujarats/API-Golang/model/driver/mock"
 	"github.com/Gujarats/API-Golang/model/global"
 )
@@ -30,10 +30,13 @@ func TestDriverHandlerBadRequestInputViolation(t *testing.T) {
 
 	w := httptest.NewRecorder()
 
-	driverMock := driverMock.DriverDataMock{}
-	driverInstance.SetInstance(driverMock)
+	// driver mock model
+	driverDataMock := driverMock.DriverDataMock{}
+	var driver driverInterface.DriverInterfacce
+	driver = &driverDataMock
 
-	InsertDriver(w, req)
+	handler := InsertDriver(driver)
+	handler.ServeHTTP(w, req)
 
 	if w.Code != http.StatusBadRequest {
 		t.Errorf("Error actual = %v, expected = %v\n", w.Code, http.StatusBadRequest)
@@ -68,10 +71,13 @@ func TestFindDriverOK(t *testing.T) {
 
 	w := httptest.NewRecorder()
 
-	driverMock := driverMock.DriverDataMock{}
-	driverInstance.SetInstance(driverMock)
+	// driver mock model
+	driverDataMock := driverMock.DriverDataMock{}
+	var driver driverInterface.DriverInterfacce
+	driver = &driverDataMock
 
-	FindDriver(w, req)
+	handler := FindDriver(driver)
+	handler.ServeHTTP(w, req)
 
 	if w.Code != http.StatusOK {
 		t.Errorf("Error actual = %v, expected = %v\n", w.Code, http.StatusOK)
@@ -108,10 +114,13 @@ func TestUpdateDriverOK(t *testing.T) {
 
 	w := httptest.NewRecorder()
 
-	driverMock := driverMock.DriverDataMock{}
-	driverInstance.SetInstance(driverMock)
+	// driver mock model
+	driverDataMock := driverMock.DriverDataMock{}
+	var driver driverInterface.DriverInterfacce
+	driver = &driverDataMock
 
-	UpdateDriver(w, req)
+	handler := UpdateDriver(driver)
+	handler.ServeHTTP(w, req)
 
 	if w.Code != http.StatusOK {
 		t.Errorf("Error actual = %v, expected = %v\n", w.Code, http.StatusOK)

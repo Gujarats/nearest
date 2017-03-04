@@ -9,15 +9,15 @@ import (
 
 	mgo "gopkg.in/mgo.v2"
 
-	"github.com/training_project/database"
-	"github.com/training_project/model/driver"
+	"github.com/Gujarats/API-Golang/database"
+	"github.com/Gujarats/API-Golang/model/driver"
 )
 
 // struct for input test case.
 type testObject struct {
 	Lat          float64
 	Lon          float64
-	Distance     int // in meters
+	Distance     int64 // in meters
 	ExpectedRows int
 }
 
