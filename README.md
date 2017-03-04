@@ -13,7 +13,6 @@ If you find any thing that can be improved I'm open for pull request.
 
 # Code Structure
 <b> Model </b>
-    - the file it self to describt the object.
     - interface : define the interface of the struct.
     - mock : define the mock struct for unit test purposes.
 And there is `global` package for define the global response on API
