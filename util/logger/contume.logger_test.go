@@ -7,7 +7,7 @@ import (
 )
 
 func init() {
-	filePath := "/home/gujarat/testLog/"
+	filePath := "./testLog/"
 	fileName := "hello.txt"
 	prefix := "TEST :: "
 	InitLogger(prefix, filePath, fileName)
@@ -25,17 +25,17 @@ func printErrorTest(t *testing.T, actual, expected interface{}) {
 
 // checking if file created is exist
 func TestCreateLogFile(t *testing.T) {
-	_, err := createLogFile("Test :: ", "/home/gujarat/testLog/", "hello.txt")
+	_, err := createLogFile("Test :: ", "./testLog/", "hello.txt")
 	check(t, err)
 
 	//checking file location
-	_, err = os.Stat("/home/gujarat/testLog/hello.txt")
+	_, err = os.Stat("./testLog/hello.txt")
 	check(t, err)
 
 }
 
 func TestWriteLog(t *testing.T) {
-	filePath := "/home/gujarat/testLog/"
+	filePath := "./testLog/"
 	fileName := "hello.txt"
 	inputData := "data log here"
 	PrintLog(inputData)
