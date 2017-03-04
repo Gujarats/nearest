@@ -44,7 +44,7 @@ func TestDriverHandlerBadRequestInputViolation(t *testing.T) {
 
 	// check the response
 	resp := w.Body.Bytes()
-	if resp == nil {
+	if resp != nil {
 		t.Error("Error Body result Empty")
 	}
 
