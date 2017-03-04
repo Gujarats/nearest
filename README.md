@@ -4,9 +4,6 @@ this is simple project for creating API using Go.
 This is based on my opinion for the folder structure and the code structure.
 If you find any thing that can be improved I'm open for pull request.
 
-# How to use and run this project ? 
-Simply by clone this project and rename the root of the folder from `API-Golang` to `training_project`.
-
 # Structure Folder
 --> model : this is where I store database transaction like read update delete etc.<br><br>
 --> controller : this is where business logic or handler to handle the incoming request.<br><br>
@@ -17,7 +14,6 @@ Simply by clone this project and rename the root of the folder from `API-Golang`
 # Code Structure
 <b> Model </b>
     - the file it self to describt the object.
-    - instance : this package is for set the struct get it on differenct case such as mock and as the real struct.
     - interface : define the interface of the struct.
     - mock : define the mock struct for unit test purposes.
 And there is `global` package for define the global response on API
@@ -37,5 +33,4 @@ this package is used for declare the business logic and the hanlder for handling
 In app.go : call all the connection database (database) -> pass it to model (model) -> call hanlder for hanlde the incoming request (controller)
 Basically liket this : main->database-> model -> handler->controller
 
-I hope this repository could help you to learn some basic developing API using Go.
 
