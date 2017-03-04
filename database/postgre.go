@@ -5,9 +5,9 @@ package database
 import (
 	"fmt"
 
+	"github.com/Gujarats/API-Golang/util/logger"
 	"github.com/jmoiron/sqlx"
 	_ "github.com/lib/pq"
-	"github.com/training_project/util/logger"
 )
 
 type PostgreHost struct {

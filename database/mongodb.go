@@ -1,7 +1,7 @@
 package database
 
 import (
-	"github.com/training_project/util/logger"
+	"github.com/Gujarats/API-Golang/util/logger"
 	mgo "gopkg.in/mgo.v2"
 )
 

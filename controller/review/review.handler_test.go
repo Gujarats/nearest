@@ -9,9 +9,9 @@ import (
 	"strconv"
 	"testing"
 
-	"github.com/training_project/model/review"
-	"github.com/training_project/model/review/instance"
-	"github.com/training_project/model/review/mock"
+	"github.com/Gujarats/API-Golang/model/review"
+	"github.com/Gujarats/API-Golang/model/review/instance"
+	"github.com/Gujarats/API-Golang/model/review/mock"
 )
 
 func TestEndPointSatusOk(t *testing.T) {

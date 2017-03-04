@@ -1,7 +1,7 @@
 package driverMock
 
 import (
-	"github.com/training_project/model/driver"
+	"github.com/Gujarats/API-Golang/model/driver"
 	mgo "gopkg.in/mgo.v2"
 )
 

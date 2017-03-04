@@ -6,11 +6,11 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/training_project/util"
-	"github.com/training_project/util/logger"
+	"github.com/Gujarats/API-Golang/util"
+	"github.com/Gujarats/API-Golang/util/logger"
 
-	"github.com/training_project/model/driver/instance"
-	"github.com/training_project/model/global"
+	"github.com/Gujarats/API-Golang/model/driver/instance"
+	"github.com/Gujarats/API-Golang/model/global"
 )
 
 // find specific driver with their ID or name.

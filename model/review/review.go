@@ -3,9 +3,9 @@ package review
 import (
 	"fmt"
 
+	"github.com/Gujarats/API-Golang/model/global"
 	"github.com/jmoiron/sqlx"
 	_ "github.com/lib/pq"
-	"github.com/training_project/model/global"
 )
 
 type (

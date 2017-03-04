@@ -3,7 +3,7 @@ package util
 import (
 	"testing"
 
-	"github.com/training_project/model/driver"
+	"github.com/Gujarats/API-Golang/model/driver"
 )
 
 func TestCheckValue(t *testing.T) {

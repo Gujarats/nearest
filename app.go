@@ -5,16 +5,16 @@ import (
 	"log"
 	"net/http"
 
+	"github.com/Gujarats/API-Golang/config"
+	"github.com/Gujarats/API-Golang/controller/driver"
+	"github.com/Gujarats/API-Golang/controller/review"
+	"github.com/Gujarats/API-Golang/database"
 	"github.com/jmoiron/sqlx"
-	"github.com/training_project/config"
-	"github.com/training_project/controller/driver"
-	"github.com/training_project/controller/review"
-	"github.com/training_project/database"
 
-	driverModel "github.com/training_project/model/driver"
-	reviewModel "github.com/training_project/model/review"
+	driverModel "github.com/Gujarats/API-Golang/model/driver"
+	reviewModel "github.com/Gujarats/API-Golang/model/review"
 
-	"github.com/training_project/util/logger"
+	"github.com/Gujarats/API-Golang/util/logger"
 
 	mgo "gopkg.in/mgo.v2"
 )

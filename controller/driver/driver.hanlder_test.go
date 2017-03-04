@@ -10,9 +10,9 @@ import (
 	"strconv"
 	"testing"
 
-	"github.com/training_project/model/driver/instance"
-	"github.com/training_project/model/driver/mock"
-	"github.com/training_project/model/global"
+	"github.com/Gujarats/API-Golang/model/driver/instance"
+	"github.com/Gujarats/API-Golang/model/driver/mock"
+	"github.com/Gujarats/API-Golang/model/global"
 )
 
 func TestDriverHandlerBadRequestInputViolation(t *testing.T) {

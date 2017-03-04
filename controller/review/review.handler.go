@@ -5,8 +5,8 @@ import (
 	"net/http"
 	"strconv"
 
-	"github.com/training_project/model/global"
-	"github.com/training_project/model/review/instance"
+	"github.com/Gujarats/API-Golang/model/global"
+	"github.com/Gujarats/API-Golang/model/review/instance"
 )
 
 func CheckDataExist(w http.ResponseWriter, r *http.Request) {

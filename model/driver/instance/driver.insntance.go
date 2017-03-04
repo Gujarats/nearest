@@ -1,10 +1,10 @@
 package driverInstance
 
 import (
-	"github.com/training_project/model/driver"
-	"github.com/training_project/model/driver/interface"
-	"github.com/training_project/model/driver/mock"
-	"github.com/training_project/util/logger"
+	"github.com/Gujarats/API-Golang/model/driver"
+	"github.com/Gujarats/API-Golang/model/driver/interface"
+	"github.com/Gujarats/API-Golang/model/driver/mock"
+	"github.com/Gujarats/API-Golang/util/logger"
 )
 
 var DriverInstance driverInterface.DriverInterfacce

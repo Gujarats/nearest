@@ -1,10 +1,10 @@
 package reviewInstance
 
 import (
-	"github.com/training_project/model/review"
-	"github.com/training_project/model/review/interface"
-	"github.com/training_project/model/review/mock"
-	"github.com/training_project/util/logger"
+	"github.com/Gujarats/API-Golang/model/review"
+	"github.com/Gujarats/API-Golang/model/review/interface"
+	"github.com/Gujarats/API-Golang/model/review/mock"
+	"github.com/Gujarats/API-Golang/util/logger"
 )
 
 var ReviewInstance reviewInterface.ReviewInterface
