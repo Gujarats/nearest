@@ -1,4 +1,5 @@
-# API-Golang
+
+# API-Golang [![Build Status](https://secure.travis-ci.org/Gujarats/API-Golang.png)](http://travis-ci.org/Gujarats/API-Golang)
 this is simple project for creating API using Go. 
 This is based on my opinion for the folder structure and the code structure.
 If you find any thing that can be improved I'm open for pull request.
