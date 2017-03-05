@@ -5,7 +5,6 @@ package database
 //we create different types of databse connection here
 func SystemConnection() map[string]interface{} {
 	listConnection := make(map[string]interface{})
-	var err error
 
 	//create mongodb connection
 	mongo := MongoHost{
@@ -14,8 +13,6 @@ func SystemConnection() map[string]interface{} {
 	}
 	mongoConnection := mongo.Connect()
 
-	listConnection["redis"] = redisConnection
-	listConnection["postgre"] = postgreConnection
 	listConnection["mongodb"] = mongoConnection
 	return listConnection
 }
