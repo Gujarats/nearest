@@ -8,7 +8,8 @@ func SystemConnection() map[string]interface{} {
 
 	//create mongodb connection
 	mongo := MongoHost{
-		Host: "172.17.0.1",
+		//Host: "172.17.0.1",
+		Host: "172.17.0.2",
 		Port: "27017",
 	}
 	mongoConnection := mongo.Connect()
