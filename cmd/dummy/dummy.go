@@ -24,7 +24,7 @@ func main() {
 	insertDummyDriver(driverData)
 }
 
-// insert database 50.000 rows
+// insert database 50.000 drivers
 // passed driver struct to save the data to database.
 func insertDummyDriver(driverData *driverModel.DriverData) {
 
