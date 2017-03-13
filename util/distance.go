@@ -4,7 +4,7 @@ import "math"
 
 // Calculate two point latitude and longitude using Harvesine formula
 // this will return the distance in meters
-func distance(lat1, lon1 float64, lat2, lon2 float64) float64 {
+func Distance(lat1, lon1 float64, lat2, lon2 float64) float64 {
 	var R float64 = 6371000.0
 	var φ1 = toRadians(lat1)
 	var φ2 = toRadians(lat2)
