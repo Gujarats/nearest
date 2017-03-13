@@ -1,6 +1,6 @@
 package database
 
-import "gopkg.in/redis.v4"
+import "gopkg.in/redis.v5"
 
 type RedisHost struct {
 	Address  string
