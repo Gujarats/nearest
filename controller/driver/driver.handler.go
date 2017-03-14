@@ -127,6 +127,7 @@ func FindDriver(driver driverInterface.DriverInterfacce) http.Handler {
 				driverResponse = drivers[0]
 				// update the driver's status to unavailable in mongodb
 				// Latitude is 1 in the index and Longitude is 0. Rules from mongodb
+				drivers[0].Status = false
 				driver.Update(drivers[0])
 				// update redis data by removing the first index
 				drivers = drivers[1:]
@@ -150,6 +151,7 @@ func FindDriver(driver driverInterface.DriverInterfacce) http.Handler {
 
 				// update the driver's status to unavailable in mongodb
 				// Latitude is 1 in the index and Longitude is 0. Rules from mongodb
+				driverResponse.Status = false
 				driver.Update(driverResponse)
 
 			} else {
