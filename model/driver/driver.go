@@ -100,7 +100,7 @@ func (d *DriverData) GetNearLocation(distance int64, lat, lon float64) []DriverD
 			},
 		},
 		"status": true,
-	}).Limit(21).All(&driverLocation)
+	}).Limit(100).All(&driverLocation)
 
 	if err != nil {
 		logger.CheckError("Mongo", err)
