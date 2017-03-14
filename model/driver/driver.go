@@ -60,9 +60,10 @@ func (d *DriverData) DriversRedis(key string) (City, []DriverData) {
 	var city City
 	var drivers []DriverData
 
-	dataString, err := redisConn.Get(key).Result()
-	if err != nil {
-		log.Panic(err)
+	dataString, _ := redisConn.Get(key).Result()
+	if dataString == "" {
+		log.Println("Drivers in redis nil")
+		return city, drivers
 	}
 
 	// split data with ++
@@ -70,7 +71,7 @@ func (d *DriverData) DriversRedis(key string) (City, []DriverData) {
 	byteCity := []byte(dataSplit[0])
 	byteDrivers := []byte(dataSplit[1])
 
-	err = json.Unmarshal(byteCity, &city)
+	err := json.Unmarshal(byteCity, &city)
 	if err != nil {
 		log.Println(err)
 	}
