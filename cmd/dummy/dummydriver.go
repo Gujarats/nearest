@@ -29,7 +29,7 @@ func main() {
 	driverData.GetConn(mongoConn)
 
 	// inserting dummy driver
-	//insertDummyDriver(driverData)
+	insertDummyDriver(driverData)
 
 	//seed redis
 	startTime := time.Now()
