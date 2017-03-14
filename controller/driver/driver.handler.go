@@ -119,7 +119,7 @@ func FindDriver(driver driverInterface.DriverInterfacce) http.Handler {
 		currentDate := time.Now().Local().Format("01-02-2016")
 		key := city + ";" + currentDate
 		cityRedis, drivers := driver.DriversRedis(key)
-		if cityRedis.Name != "" {
+		if cityRedis.Name != "" && len(drivers) > 0 {
 			// calculate distance with the saved location in redis
 			distance := util.Distance(cityRedis.Lat, cityRedis.Lon, latFloat, lonFloat)
 			if distance <= 100.0 {
