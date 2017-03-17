@@ -43,6 +43,7 @@ func main() {
 	driverData := &driverModel.DriverData{}
 	driverInterface = driverData
 
+	// pass database connections to model
 	driverInterface.GetConn(mongoConn, redisConn)
 
 	// driver router
