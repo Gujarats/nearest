@@ -13,6 +13,7 @@ import (
 	mgo "gopkg.in/mgo.v2"
 	redis "gopkg.in/redis.v5"
 
+	cityModel "github.com/Gujarats/API-Golang/model/city"
 	driverModel "github.com/Gujarats/API-Golang/model/driver"
 )
 
@@ -26,10 +27,18 @@ func main() {
 
 	// init driver model
 	driverData := &driverModel.DriverData{}
-	driverData.GetConn(mongoConn)
+	driverData.GetConn(mongoConn, redisConn)
+
+	// init city model
+	cityName := "Bandung"
+	city := &cityModel.City{}
+	city.GetConn(mongoConn, redisConn)
+
+	// inserting city district
+	insertDummyMarkLocation(cityName, city)
 
 	// inserting dummy driver
-	insertDummyDriver(driverData)
+	insertDummyDriver(cityName, city, driverData)
 
 	//seed redis
 	startTime := time.Now()
@@ -39,13 +48,66 @@ func main() {
 
 }
 
+func insertDummyMarkLocation(cityName string, city *cityModel.City) {
+	// some location in Bandung
+	lat := -6.8647721
+	lon := 107.553501
+	var locations []location.Location
+
+	locations = location.GenerateLocation(lat, lon, 5, 50)
+
+	for index, resultLocation := range locations {
+		err := city.InsertDistrict(cityName, index, resultLocation.Lat, resultLocation.Lon)
+		if err != nil {
+			log.Panic(err)
+		}
+	}
+
+}
+
 // insert database 50.000 rows
 // passed driver struct to save the data to database.
-func insertDummyDriver(driverData *driverModel.DriverData) {
+func insertDummyDriver(cityName string, city *cityModel.City, driverData *driverModel.DriverData) {
 
 	dummyDrivers := GenereateDriver(50000)
-	for _, driver := range dummyDrivers {
-		driverData.Insert(driver.Name, driver.Lat, driver.Lon, driver.Status)
+
+	// getting all district from a city
+	districts, err := city.AllDistrict(cityName)
+	if err != nil {
+		log.Panic(err)
+	}
+
+	counter := 0
+	indexDistrict := 0
+	distric := districts[indexDistrict]
+
+	// loop drivers and insert 100 drivers to every district
+	for indexDriver, driver := range dummyDrivers {
+		// counter for breaking the loop if we have 1
+		counter++
+
+		//create collectionName for using the format: cityName_district_DistrictId
+		districtId := distric.Id.Hex()
+		collectionsName := cityName + "_district_" + districtId
+
+		// print the data
+		fmt.Println("index = ", indexDriver)
+		fmt.Println("collectionName = ", collectionsName)
+		fmt.Printf("driver= %+v\n", driver)
+
+		// create index driver
+		err := driverData.CreateIndex(collectionsName)
+		if err != nil {
+			log.Panic(err)
+		}
+		driverData.Insert(collectionsName, driver.Name, driver.Lat, driver.Lon, driver.Status)
+		if counter == 100 {
+			counter = 0
+			if indexDistrict < len(districts)-1 {
+				distric = districts[indexDistrict+1]
+				indexDistrict++
+			}
+		}
 	}
 
 }
@@ -105,7 +167,7 @@ func GenereateDriver(sum int) []Driver {
 	location.SetupLocation(48.8588377, 2.2775176)
 
 	// get 30 % of the sum data
-	smallPercentage := (30.0 / 100.0) * float64(sum)
+	smallPercentage := (50.0 / 100.0) * float64(sum)
 	percentData := int(smallPercentage)
 
 	// random lat lon based on seconds
@@ -117,7 +179,7 @@ func GenereateDriver(sum int) []Driver {
 				Name:   fake.FullName(),
 				Lat:    lat,
 				Lon:    lon,
-				Status: true,
+				Status: false,
 			}
 			drivers = append(drivers, dummyDriver)
 		} else {
