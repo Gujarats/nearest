@@ -29,12 +29,35 @@ func (c *City) GetConn(mongoConnection *mgo.Session, redisConnection *redis.Clie
 	redisConn = redisConnection
 }
 
+// check mongo connection if error return it.
 func checkMongoConnection(mongoConnection *mgo.Session) error {
 	if mongoConnection == nil {
 		return errors.New("No Mongo Connection")
 	}
 
 	return nil
+}
+
+func (c *City) CreateIndex(collectionName string) error {
+	var err error
+	err = checkMongoConnection(mongo)
+	if err != nil {
+		return err
+	}
+
+	index := mgo.Index{
+		Key: []string{"$2dsphere:locatation"},
+	}
+
+	// create index from given collection
+	collection := mongo.DB("Driver").C(collectionName)
+	err = collection.EnsureIndex(index)
+	if err != nil {
+		return err
+	}
+
+	return nil
+
 }
 
 // Inserting district to mongo database
