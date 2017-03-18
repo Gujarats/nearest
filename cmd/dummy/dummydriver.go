@@ -48,14 +48,20 @@ func main() {
 
 }
 
+// insert dummy location from latitude and longitude.
 func insertDummyMarkLocation(cityName string, city *cityModel.City) {
 	// some location in Bandung
 	lat := -6.8647721
 	lon := 107.553501
 	var locations []location.Location
 
+	// geneerate location with distance 5 km in every point and limit lenght 50 km.
 	locations = location.GenerateLocation(lat, lon, 5, 50)
 
+	err := city.CreateIndex(cityName)
+	if err != nil {
+		log.Panic(err)
+	}
 	for index, resultLocation := range locations {
 		err := city.InsertDistrict(cityName, index, resultLocation.Lat, resultLocation.Lon)
 		if err != nil {
@@ -65,11 +71,9 @@ func insertDummyMarkLocation(cityName string, city *cityModel.City) {
 
 }
 
-// insert database 50.000 rows
+// insert 50.000 drivers. 100 drivers in every district.
 // passed driver struct to save the data to database.
 func insertDummyDriver(cityName string, city *cityModel.City, driverData *driverModel.DriverData) {
-
-	dummyDrivers := GenereateDriver(50000)
 
 	// getting all district from a city
 	districts, err := city.AllDistrict(cityName)
@@ -77,44 +81,34 @@ func insertDummyDriver(cityName string, city *cityModel.City, driverData *driver
 		log.Panic(err)
 	}
 
-	counter := 0
-	indexDistrict := 0
-	distric := districts[indexDistrict]
-
-	// loop drivers and insert 100 drivers to every district
-	for indexDriver, driver := range dummyDrivers {
-		// counter for breaking the loop if we have 1
-		counter++
+	// create one
+	for _, district := range districts {
+		// generate 100 drivers
+		dummyDrivers := GenereateDriver(district.Location.Coordinates[1], district.Location.Coordinates[0], 100)
 
 		//create collectionName for using the format: cityName_district_DistrictId
-		districtId := distric.Id.Hex()
+		districtId := district.Id.Hex()
 		collectionsName := cityName + "_district_" + districtId
 
-		// print the data
-		fmt.Println("index = ", indexDriver)
-		fmt.Println("collectionName = ", collectionsName)
-		fmt.Printf("driver= %+v\n", driver)
+		for _, driver := range dummyDrivers {
 
-		// create index driver
-		err := driverData.CreateIndex(collectionsName)
-		if err != nil {
-			log.Panic(err)
-		}
-		driverData.Insert(collectionsName, driver.Name, driver.Lat, driver.Lon, driver.Status)
-		if counter == 100 {
-			counter = 0
-			if indexDistrict < len(districts)-1 {
-				distric = districts[indexDistrict+1]
-				indexDistrict++
+			// print the data
+			fmt.Println("collectionName = ", collectionsName)
+			fmt.Printf("driver= %+v\n", driver)
+
+			// create index driver
+			err := driverData.CreateIndex(collectionsName)
+			if err != nil {
+				log.Panic(err)
 			}
+			driverData.Insert(collectionsName, driver.Name, driver.Lat, driver.Lon, driver.Status)
 		}
 	}
-
 }
 
 func seedDriverRedis(redisConn *redis.Client) {
 	// create 20 driver
-	drivers := GenereateDriver(20)
+	drivers := GenereateDriver(48.8588377, 2.2775176, 20)
 	city := City{
 		Name: "Paris",
 		Lat:  48.8588377,
@@ -144,9 +138,6 @@ func GetDriverRedis(redisConn *redis.Client) {
 
 	err = json.Unmarshal(byteCity, &city)
 	err = json.Unmarshal(byteDrivers, &drivers)
-
-	//fmt.Printf("city = %+v\n", city)
-	//fmt.Printf("drivers = %+v\n", drivers)
 }
 
 type Driver struct {
@@ -162,9 +153,9 @@ type City struct {
 	Lon  float64 `json:"lon"`
 }
 
-func GenereateDriver(sum int) []Driver {
+func GenereateDriver(lat, lon float64, sum int) []Driver {
 	var drivers []Driver
-	location.SetupLocation(48.8588377, 2.2775176)
+	location.SetupLocation(lat, lon)
 
 	// get 30 % of the sum data
 	smallPercentage := (50.0 / 100.0) * float64(sum)
