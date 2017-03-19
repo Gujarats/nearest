@@ -46,7 +46,7 @@ func (c *City) CreateIndex(collectionName string) error {
 	}
 
 	index := mgo.Index{
-		Key: []string{"$2dsphere:locatation"},
+		Key: []string{"$2dsphere:location"},
 	}
 
 	// create index from given collection
@@ -72,7 +72,7 @@ func (c *City) InsertDistrict(city string, distric int, lat, lon float64) error 
 
 	c.District = distric
 	c.Name = city
-	c.Location = GeoJson{Type: "point", Coordinates: []float64{lon, lat}} // lon, lat order rules from mongodb
+	c.Location = GeoJson{Type: "Point", Coordinates: []float64{lon, lat}} // lon, lat order rules from mongodb
 
 	err = collection.Insert(c)
 	if err != nil {
@@ -100,6 +100,7 @@ func (c *City) AllDistrict(city string) ([]City, error) {
 	return cities, nil
 }
 
+// get Near district in the city with given distance in meters
 func (c *City) GetNearestDistrict(cityName string, lat, lon float64, distance int64) (City, error) {
 	var err error
 	var city City
