@@ -89,6 +89,7 @@ func (d *DriverData) DriversRedis(key string) (City, []DriverData) {
 
 //===================MongoDB====================//
 
+// get Near driver with given distance in meters
 func (d *DriverData) GetNearLocation(distance int64, lat, lon float64) []DriverData {
 	collection := mongo.DB("Driver").C("driver")
 
