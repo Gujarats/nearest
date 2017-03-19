@@ -55,8 +55,9 @@ func insertDummyMarkLocation(cityName string, city *cityModel.City) {
 	lon := 107.553501
 	var locations []location.Location
 
-	// geneerate location with distance 5 km in every point and limit lenght 50 km.
-	locations = location.GenerateLocation(lat, lon, 5, 50)
+	// geneerate location with distance 1 km in every point and limit lenght 50 km.
+	// so it will be (50/1)^2 = 2500 district
+	locations = location.GenerateLocation(lat, lon, 1, 50)
 
 	err := city.CreateIndex(cityName)
 	if err != nil {
@@ -84,7 +85,8 @@ func insertDummyDriver(cityName string, city *cityModel.City, driverData *driver
 	// create one
 	for _, district := range districts {
 		// generate 100 drivers
-		dummyDrivers := GenereateDriver(district.Location.Coordinates[1], district.Location.Coordinates[0], 100)
+		fmt.Printf("Generating drivers in distrtic = %+v\n", district)
+		dummyDrivers := GenereateDriver(district.Location.Coordinates[1], district.Location.Coordinates[0], 1000)
 
 		//create collectionName for using the format: cityName_district_DistrictId
 		districtId := district.Id.Hex()
@@ -93,8 +95,6 @@ func insertDummyDriver(cityName string, city *cityModel.City, driverData *driver
 		for _, driver := range dummyDrivers {
 
 			// print the data
-			fmt.Println("collectionName = ", collectionsName)
-			fmt.Printf("driver= %+v\n", driver)
 
 			// create index driver
 			err := driverData.CreateIndex(collectionsName)
