@@ -29,12 +29,12 @@ func (d *DriverOnlyCityMock) GetNearLocation(distance int64, lat, lon float64) [
 }
 
 //===================REDIS====================//
-func (d *DriverOnlyCityMock) SaveDriversRedis(drivers []driver.DriverData, city driver.City) {
+
+func (d *DriverOnlyCityMock) SaveDriversRedis(drivers []driver.DriverData, city, idDistrict string) {
 }
 
-func (d *DriverOnlyCityMock) DriversRedis(key string) (driver.City, []driver.DriverData) {
+func (d *DriverOnlyCityMock) DriversRedis(city, idDistrict string) []driver.DriverData {
 	var drivers []driver.DriverData
-	city := driver.City{Name: "Test"}
 
-	return city, drivers
+	return drivers
 }

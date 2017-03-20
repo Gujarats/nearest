@@ -10,9 +10,6 @@ import (
 type CityInterfacce interface {
 	GetConn(mongoConnection *mgo.Session, redisConnection *redis.Client)
 
-	// check mongo connection if error return it.
-	checkMongoConnection(mongoConnection *mgo.Session) error
-
 	CreateIndex(collectionName string) error
 
 	// Inserting district to mongo database

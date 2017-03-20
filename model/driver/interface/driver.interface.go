@@ -12,6 +12,7 @@ type DriverInterfacce interface {
 	Find(name string) *driver.DriverData
 	Update(driverData driver.DriverData)
 	GetNearLocation(distance int64, lat, lon float64) []driver.DriverData
-	SaveDriversRedis(drivers []driver.DriverData, city driver.City)
-	DriversRedis(key string) (driver.City, []driver.DriverData)
+
+	SaveDriversRedis(drivers []driver.DriverData, city, idDistrict string)
+	DriversRedis(city, idDistrict string) []driver.DriverData
 }

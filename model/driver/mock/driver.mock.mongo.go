@@ -27,13 +27,12 @@ func (d *DriverMongoMock) GetNearLocation(distance int64, lat, lon float64) []dr
 }
 
 //===================REDIS====================//
-func (d *DriverMongoMock) SaveDriversRedis(drivers []driver.DriverData, city driver.City) {
+func (d *DriverMongoMock) SaveDriversRedis(drivers []driver.DriverData, city, idDistrict string) {
 }
 
-// return an empty city and drivers from redis
-func (d *DriverMongoMock) DriversRedis(key string) (driver.City, []driver.DriverData) {
-	var city driver.City
+// return an empty drivers from redis
+func (d *DriverMongoMock) DriversRedis(city, idDistrict string) []driver.DriverData {
 	var drivers []driver.DriverData
 
-	return city, drivers
+	return drivers
 }

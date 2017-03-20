@@ -4,8 +4,6 @@ import (
 	"encoding/json"
 	"log"
 	"os"
-	"strings"
-	"time"
 
 	mgo "gopkg.in/mgo.v2"
 	"gopkg.in/mgo.v2/bson"
@@ -48,43 +46,40 @@ func (d *DriverData) GetConn(mongoSession *mgo.Session, redisConnection *redis.C
 }
 
 //===================REDIS====================//
-func (d *DriverData) SaveDriversRedis(drivers []DriverData, city City) {
-	savedTime := time.Now().Local().Format("01-02-2016")
-	byteDrivers, _ := json.Marshal(drivers)
-	byteCity, _ := json.Marshal(city)
-	data := string(byteCity) + "++" + string(byteDrivers)
 
-	// the key here is city;date;number
-	redisConn.Set(city.Name+";"+savedTime, data, 0)
+// the format of the key is : city_district_id-mongodb
+// saves drivers data to redis
+func (d *DriverData) SaveDriversRedis(drivers []DriverData, city, idDistrict string) {
+	byteDrivers, _ := json.Marshal(drivers)
+
+	// the key here is city
+	redisConn.Set(city+"_district_"+idDistrict, byteDrivers, 0)
 }
 
-// the format of the key is : city;date
+// the format of the key is : city_district_id-mongodb
 // return the Drivers data from redis
-func (d *DriverData) DriversRedis(key string) (City, []DriverData) {
-	var city City
+func (d *DriverData) DriversRedis(city, idDistrict string) []DriverData {
+	key := city + "_district_" + idDistrict
 	var drivers []DriverData
 
-	dataString, _ := redisConn.Get(key).Result()
-	if dataString == "" {
+	driversBytes, err := redisConn.Get(key).Bytes()
+	if err != nil {
+		logger.Println(err)
+	}
+
+	// checkking the result data from redis
+	if len(driversBytes) == 0 {
 		logger.Println("Drivers in redis nil")
-		return city, drivers
+		return drivers
 	}
 
-	// split data with ++
-	dataSplit := strings.Split(dataString, "++")
-	byteCity := []byte(dataSplit[0])
-	byteDrivers := []byte(dataSplit[1])
-
-	err := json.Unmarshal(byteCity, &city)
-	if err != nil {
-		logger.Println(err)
-	}
-	err = json.Unmarshal(byteDrivers, &drivers)
+	// unmarshal driversBytes
+	err = json.Unmarshal(driversBytes, &drivers)
 	if err != nil {
 		logger.Println(err)
 	}
 
-	return city, drivers
+	return drivers
 }
 
 //===================MongoDB====================//
