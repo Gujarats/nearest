@@ -212,7 +212,7 @@ func InsertDriver(driver driverInterface.DriverInterfacce) http.Handler {
 		lonFloat := convertedFloat[1]
 
 		// insert driver
-		driver.Insert(name, latFloat, lonFloat, statusBool)
+		driver.Insert(name, name, latFloat, lonFloat, statusBool)
 
 		//return succes response
 		w.WriteHeader(http.StatusOK)
