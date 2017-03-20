@@ -12,7 +12,7 @@ type DriverMongoMock struct{}
 func (d *DriverMongoMock) GetConn(mongoSession *mgo.Session, redisConnection *redis.Client) {
 }
 
-func (d *DriverMongoMock) Insert(name string, lat, lon float64, status bool) {
+func (d *DriverMongoMock) Insert(collectionName, name string, lat, lon float64, status bool) {
 
 }
 
@@ -24,6 +24,17 @@ func (d *DriverMongoMock) Update(driverData driver.DriverData) {}
 
 func (d *DriverMongoMock) GetNearLocation(distance int64, lat, lon float64) []driver.DriverData {
 	return []driver.DriverData{}
+}
+
+// returning available driver
+func (d *DriverMongoMock) GetAvailableDriver() []driver.DriverData {
+	var drivers []driver.DriverData
+
+	drivers = []driver.DriverData{
+		{Name: "Test"},
+		{Name: "Test"},
+	}
+	return drivers
 }
 
 //===================REDIS====================//

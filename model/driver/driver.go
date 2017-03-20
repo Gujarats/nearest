@@ -36,7 +36,7 @@ var logger *log.Logger
 
 func init() {
 	logger = log.New(os.Stderr,
-		"Driver",
+		"Driver Model :: ",
 		log.Ldate|log.Ltime|log.Lshortfile)
 }
 
@@ -65,6 +65,7 @@ func (d *DriverData) DriversRedis(city, idDistrict string) []DriverData {
 	driversBytes, err := redisConn.Get(key).Bytes()
 	if err != nil {
 		logger.Println(err)
+		return drivers
 	}
 
 	// checkking the result data from redis
@@ -107,6 +108,21 @@ func (d *DriverData) GetNearLocation(distance int64, lat, lon float64) []DriverD
 	}
 
 	return driverLocation
+}
+
+func (d *DriverData) GetAvailableDriver() []DriverData {
+	collection := mongo.DB("Driver").C("driver")
+
+	var drivers []DriverData
+	err := collection.Find(bson.M{
+		"status": true,
+	}).Limit(100).All(&drivers)
+
+	if err != nil {
+		logger.Println(err)
+	}
+
+	return drivers
 }
 
 func (d *DriverData) Insert(collectionName string, name string, lat, lon float64, status bool) {

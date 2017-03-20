@@ -11,7 +11,9 @@ type DriverInterfacce interface {
 	Insert(collectionName string, name string, lat, lon float64, status bool)
 	Find(name string) *driver.DriverData
 	Update(driverData driver.DriverData)
+
 	GetNearLocation(distance int64, lat, lon float64) []driver.DriverData
+	GetAvailableDriver() []driver.DriverData
 
 	SaveDriversRedis(drivers []driver.DriverData, city, idDistrict string)
 	DriversRedis(city, idDistrict string) []driver.DriverData

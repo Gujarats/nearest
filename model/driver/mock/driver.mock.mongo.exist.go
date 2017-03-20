@@ -12,7 +12,7 @@ type DriverMongoExistMock struct{}
 func (d *DriverMongoExistMock) GetConn(mongoSession *mgo.Session, redisConnection *redis.Client) {
 }
 
-func (d *DriverMongoExistMock) Insert(name string, lat, lon float64, status bool) {
+func (d *DriverMongoExistMock) Insert(collectionName, name string, lat, lon float64, status bool) {
 
 }
 
@@ -28,6 +28,17 @@ func (d *DriverMongoExistMock) GetNearLocation(distance int64, lat, lon float64)
 		{Id: "_idDummy", Name: "testDriver", Status: true, Location: driver.GeoJson{Coordinates: []float64{2.2, 2.2}}},
 		{Id: "_idDummy", Name: "testDriver", Status: true, Location: driver.GeoJson{Coordinates: []float64{2.2, 2.2}}},
 	}
+}
+
+// returning available driver
+func (d *DriverMongoExistMock) GetAvailableDriver() []driver.DriverData {
+	var drivers []driver.DriverData
+
+	drivers = []driver.DriverData{
+		{Name: "Test"},
+		{Name: "Test"},
+	}
+	return drivers
 }
 
 //===================REDIS====================//
