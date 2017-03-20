@@ -66,7 +66,7 @@ func UpdateDriver(driver driverInterface.DriverInterfacce) http.Handler {
 		lonFloat := convertedFloat[1]
 
 		driverData := driverModel.DriverData{Id: bson.ObjectId(id), Name: name, Status: statusBool, Location: driverModel.GeoJson{Coordinates: []float64{lonFloat, latFloat}}}
-		driver.Update(driverData)
+		driver.Update("test", "test", driverData)
 
 		//return succes response
 		elpasedTime := time.Since(startTimer).Seconds()
@@ -144,7 +144,7 @@ func FindDriver(driver driverInterface.DriverInterfacce, cityInterface cityInter
 			// update the driver's status to unavailable in mongodb
 			// Latitude is 1 in the index and Longitude is 0. Rules from mongodb
 			drivers[0].Status = false
-			driver.Update(drivers[0])
+			driver.Update(district.Name, district.Id.Hex(), drivers[0])
 
 			// update redis data by removing the first index
 			drivers = drivers[1:]
@@ -153,12 +153,12 @@ func FindDriver(driver driverInterface.DriverInterfacce, cityInterface cityInter
 
 		} else {
 			// get drivers from mongodb
-			drivers = driver.GetAvailableDriver()
+			drivers = driver.GetAvailableDriver(district.Name, district.Id.Hex())
 			if len(drivers) > 0 {
 				driverResponse = drivers[0]
 
 				drivers[0].Status = false
-				driver.Update(drivers[0])
+				driver.Update(district.Name, district.Id.Hex(), drivers[0])
 
 				// update redis data by removing the first index
 				drivers = drivers[1:]
@@ -169,7 +169,6 @@ func FindDriver(driver driverInterface.DriverInterfacce, cityInterface cityInter
 				w.WriteHeader(http.StatusOK)
 				global.SetResponse(w, "Success", "We couldn't find any driver")
 				return
-
 			}
 		}
 
