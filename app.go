@@ -6,11 +6,15 @@ import (
 	"net/http"
 
 	"github.com/Gujarats/API-Golang/config"
-	"github.com/Gujarats/API-Golang/controller/driver"
 	"github.com/Gujarats/API-Golang/database"
 
 	driverModel "github.com/Gujarats/API-Golang/model/driver"
 	driverInterface "github.com/Gujarats/API-Golang/model/driver/interface"
+
+	cityModel "github.com/Gujarats/API-Golang/model/city"
+	"github.com/Gujarats/API-Golang/model/city/interface"
+
+	driverController "github.com/Gujarats/API-Golang/controller/driver"
 
 	"github.com/Gujarats/API-Golang/util/logger"
 
@@ -39,16 +43,22 @@ func main() {
 	//reviewData.GetConn(postgreConn)
 
 	// set driver interface
-	var driverInterface driverInterface.DriverInterfacce
+	var driver driverInterface.DriverInterfacce
 	driverData := &driverModel.DriverData{}
-	driverInterface = driverData
+	driver = driverData
+
+	// set city interface
+	var city cityInterface.CityInterfacce
+	cityData := &cityModel.City{}
+	city = cityData
 
 	// pass database connections to model
-	driverInterface.GetConn(mongoConn, redisConn)
+	driver.GetConn(mongoConn, redisConn)
+	city.GetConn(mongoConn, redisConn)
 
 	// driver router
-	http.Handle("/driver/find", driver.FindDriver(driverInterface))
-	http.Handle("/driver/update", driver.UpdateDriver(driverInterface))
+	http.Handle("/driver/find", driverController.FindDriver(driver, city))
+	http.Handle("/driver/update", driverController.UpdateDriver(driver))
 
 	port := ":8080"
 	fmt.Println("App Started on port = ", port)
