@@ -7,7 +7,8 @@ import (
 )
 
 type DriverDataMock struct {
-	Name string
+	Drivers []driver.DriverData
+	Driver  driver.DriverData
 }
 
 //===================MongoDB====================//
@@ -19,25 +20,18 @@ func (d *DriverDataMock) Insert(collecctionName, name string, lat, lon float64, 
 }
 
 func (d *DriverDataMock) Find(name string) *driver.DriverData {
-	return &driver.DriverData{}
+	return &d.Driver
 }
 
 func (d *DriverDataMock) Update(city, idDistrict string, driver driver.DriverData) {}
 
 func (d *DriverDataMock) GetNearLocation(distance int64, lat, lon float64) []driver.DriverData {
-	return []driver.DriverData{}
+	return d.Drivers
 }
 
 // returning available driver
 func (d *DriverDataMock) GetAvailableDriver(city, IdDistrict string) []driver.DriverData {
-	var drivers []driver.DriverData
-
-	drivers = []driver.DriverData{
-		{Name: "Test"},
-		{Name: "Test"},
-	}
-	return drivers
-
+	return d.Drivers
 }
 
 //===================REDIS====================//
@@ -46,11 +40,5 @@ func (d *DriverDataMock) SaveDriversRedis(drivers []driver.DriverData, city, idD
 }
 
 func (d *DriverDataMock) DriversRedis(city, idDistrict string) []driver.DriverData {
-
-	drivers := []driver.DriverData{
-		{Name: "TestDriversName", Status: true},
-		{Name: "TestDriversName", Status: true},
-	}
-
-	return drivers
+	return d.Drivers
 }
