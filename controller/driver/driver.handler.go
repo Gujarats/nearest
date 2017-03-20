@@ -128,7 +128,7 @@ func FindDriver(driver driverInterface.DriverInterfacce, cityInterface cityInter
 		// checking district result from mongodb
 		if district.Name == "" {
 			w.WriteHeader(http.StatusInternalServerError)
-			global.SetResponse(w, "Failed", "No District found")
+			global.SetResponse(w, "Failed", "No district found")
 			return
 		}
 
@@ -175,7 +175,7 @@ func FindDriver(driver driverInterface.DriverInterfacce, cityInterface cityInter
 		//return succes response
 		w.WriteHeader(http.StatusOK)
 		elapsedTime := time.Since(startTimer).Seconds()
-		response := global.Response{Status: "Success", Message: "Data Found", Latency: elapsedTime, Data: driverResponse}
+		response := global.Response{Status: "Success", Message: "Data found", Latency: elapsedTime, Data: driverResponse}
 		json.NewEncoder(w).Encode(response)
 		return
 

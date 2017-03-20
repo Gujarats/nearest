@@ -3,12 +3,15 @@ package driver
 import (
 	"bytes"
 	"encoding/json"
-	"fmt"
+	"errors"
 	"net/http"
 	"net/http/httptest"
 	"net/url"
 	"strconv"
 	"testing"
+
+	"github.com/Gujarats/API-Golang/model/city"
+	"github.com/Gujarats/API-Golang/model/driver"
 
 	"github.com/Gujarats/API-Golang/model/city/mock"
 	"github.com/Gujarats/API-Golang/model/driver/mock"
@@ -19,57 +22,136 @@ import (
 	"github.com/Gujarats/API-Golang/model/global"
 )
 
-// Finding Driver Ok from Redis
-func TestFindDriverOKRedis(t *testing.T) {
-	// create body params
-	body := url.Values{}
-	body.Set("latitude", "48.8588377")
-	body.Set("longitude", "2.2775176")
-	body.Set("city", "kuningan")
-	body.Set("distance", "200")
+func TestFindDriver(t *testing.T) {
+	testObjects := []struct {
+		CityMock   cityMock.CityMock
+		DriverMock driverMock.DriverDataMock
+		Status     int
+		Message    string
+	}{
+		// first test index
+		// with all field exist city Mock
+		{
+			CityMock: cityMock.CityMock{
+				Err: errors.New("mock error"),
+				City: city.City{
+					Name: "Bandung",
+				},
+			},
 
-	//we pass a dummy value to pass the required params
-	req := httptest.NewRequest("POST", "/driver/find", bytes.NewBufferString(body.Encode()))
-	req.Header.Add("Content-Type", "application/x-www-form-urlencoded")
-	req.Header.Add("Content-Length", strconv.Itoa(len(body.Encode())))
+			DriverMock: driverMock.DriverDataMock{
+				Drivers: []driver.DriverData{
+					{Name: "test driver"},
+					{Name: "test driver"},
+				},
+				Driver: driver.DriverData{
+					Name: "test driver",
+				},
+			},
 
-	w := httptest.NewRecorder()
+			Status:  http.StatusInternalServerError,
+			Message: "Failed to get nearest district",
+		},
 
-	// driver mock model
-	driverDataMock := driverMock.DriverDataMock{}
-	var driver driverInterface.DriverInterfacce
-	driver = &driverDataMock
+		// second test index.
+		// with city mock :  error nil
+		{
+			CityMock: cityMock.CityMock{
+				Err: nil,
+				City: city.City{
+					Name: "Bandung",
+				},
+			},
 
-	// city mock model
-	cityModelMock := cityMock.CityMock{}
-	var city cityInterface.CityInterfacce
-	city = &cityModelMock
+			DriverMock: driverMock.DriverDataMock{
+				Drivers: []driver.DriverData{
+					{Name: "test driver"},
+					{Name: "test driver"},
+				},
+				Driver: driver.DriverData{
+					Name: "test driver",
+				},
+			},
 
-	handler := FindDriver(driver, city)
-	handler.ServeHTTP(w, req)
+			Status:  http.StatusOK,
+			Message: "Data found",
+		},
 
-	if w.Code != http.StatusOK {
-		t.Errorf("Error actual = %v, expected = %v\n", w.Code, http.StatusOK)
+		// third test index
+		// with CityMock error and cities nil
+		{
+			CityMock: cityMock.CityMock{
+				Err: nil,
+			},
+
+			DriverMock: driverMock.DriverDataMock{
+				Drivers: []driver.DriverData{
+					{Name: "test driver"},
+					{Name: "test driver"},
+				},
+				Driver: driver.DriverData{
+					Name: "test driver",
+				},
+			},
+			Status:  http.StatusInternalServerError,
+			Message: "No district found",
+		},
+
+		// fourth test index
+		// Drivermock complete
+		{
+			CityMock: cityMock.CityMock{
+				Err: nil,
+				City: city.City{
+					Name: "Bandung",
+				},
+			},
+
+			DriverMock: driverMock.DriverDataMock{
+				Drivers: []driver.DriverData{
+					{Name: "test driver"},
+					{Name: "test driver"},
+				},
+			},
+			Status:  http.StatusOK,
+			Message: "Data found",
+		},
+
+		// fifth test index
+		// Drivermock Drivers empty
+		{
+			CityMock: cityMock.CityMock{
+				Err: nil,
+				City: city.City{
+					Name: "Bandung",
+				},
+			},
+
+			DriverMock: driverMock.DriverDataMock{},
+			Status:     http.StatusOK,
+			Message:    "We couldn't find any driver",
+		},
 	}
 
-	// check the response
-	resp := w.Body.Bytes()
-	if resp == nil {
-		t.Error("Error Body result Empty")
+	for indexTest, testObject := range testObjects {
+		actualStatus, actualMessage, err := createRequest(&testObject.CityMock, &testObject.DriverMock)
+		if err != nil {
+			t.Error(err)
+		}
+
+		if actualStatus != testObject.Status {
+			t.Errorf("Error :: index = %v, actual = %v, expected = %v", indexTest, actualStatus, testObject.Status)
+		}
+
+		if actualMessage != testObject.Message {
+			t.Errorf("Error :: index = %v, actual = %v, expected = %v", indexTest, actualMessage, testObject.Message)
+
+		}
 	}
-
-	RespResult := global.Response{}
-	err := json.Unmarshal(resp, &RespResult)
-	if err != nil {
-		t.Error(err)
-	}
-
-	fmt.Printf("response = %+v\n", RespResult)
-
 }
 
-// Finding Driver Ok from Redis only city
-func TestFindDriverOKRedisCityOnly(t *testing.T) {
+// create test request that pass all parameters requirement.
+func createRequest(cityMock *cityMock.CityMock, driverMock *driverMock.DriverDataMock) (int, string, error) {
 	// create body params
 	body := url.Values{}
 	body.Set("latitude", "48.8588377")
@@ -85,134 +167,30 @@ func TestFindDriverOKRedisCityOnly(t *testing.T) {
 	w := httptest.NewRecorder()
 
 	// driver mock model
-	driverDataMock := driverMock.DriverOnlyCityMock{}
 	var driver driverInterface.DriverInterfacce
-	driver = &driverDataMock
+	driver = driverMock
 
 	// city mock model
-	cityModelMock := cityMock.CityMock{}
 	var city cityInterface.CityInterfacce
-	city = &cityModelMock
+	city = cityMock
 
+	// craete request
 	handler := FindDriver(driver, city)
 	handler.ServeHTTP(w, req)
-
-	if w.Code != http.StatusOK {
-		t.Errorf("Error actual = %v, expected = %v\n", w.Code, http.StatusOK)
-	}
 
 	// check the response
 	resp := w.Body.Bytes()
 	if resp == nil {
-		t.Error("Error Body result Empty")
+		return -1, "", errors.New("Response body is empty")
 	}
 
+	// response result
 	RespResult := global.Response{}
 	err := json.Unmarshal(resp, &RespResult)
 	if err != nil {
-		t.Error(err)
+		return -1, "", err
 	}
 
-	fmt.Printf("response = %+v\n", RespResult)
-
-}
-
-// finding driver Ok from mongo empty data
-// create mock that return empty data from redis
-func TestFindDriverOKMongoDB(t *testing.T) {
-	// create body params
-	body := url.Values{}
-	body.Set("latitude", "48.8588377")
-	body.Set("longitude", "2.2775176")
-	body.Set("city", "kuningan")
-	body.Set("distance", "200")
-
-	//we pass a dummy value to pass the required params
-	req := httptest.NewRequest("POST", "/driver/find", bytes.NewBufferString(body.Encode()))
-	req.Header.Add("Content-Type", "application/x-www-form-urlencoded")
-	req.Header.Add("Content-Length", strconv.Itoa(len(body.Encode())))
-
-	w := httptest.NewRecorder()
-
-	// driver mock model
-	driverDataMock := driverMock.DriverMongoMock{}
-	var driver driverInterface.DriverInterfacce
-	driver = &driverDataMock
-
-	// city mock model
-	cityModelMock := cityMock.CityMock{}
-	var city cityInterface.CityInterfacce
-	city = &cityModelMock
-
-	handler := FindDriver(driver, city)
-	handler.ServeHTTP(w, req)
-
-	if w.Code != http.StatusOK {
-		t.Errorf("Error actual = %v, expected = %v\n", w.Code, http.StatusOK)
-	}
-
-	// check the response
-	resp := w.Body.Bytes()
-	if resp == nil {
-		t.Error("Error Body result Empty")
-	}
-
-	RespResult := global.Response{}
-	err := json.Unmarshal(resp, &RespResult)
-	if err != nil {
-		t.Error(err)
-	}
-
-	fmt.Printf("response = %+v\n", RespResult)
-
-}
-
-// finding driver Ok from mongo exist data
-// create mock that return empty data from redis
-func TestFindDriverOKMongoDBExist(t *testing.T) {
-	// create body params
-	body := url.Values{}
-	body.Set("latitude", "48.8588377")
-	body.Set("longitude", "2.2775176")
-	body.Set("city", "kuningan")
-	body.Set("distance", "200")
-
-	//we pass a dummy value to pass the required params
-	req := httptest.NewRequest("POST", "/driver/find", bytes.NewBufferString(body.Encode()))
-	req.Header.Add("Content-Type", "application/x-www-form-urlencoded")
-	req.Header.Add("Content-Length", strconv.Itoa(len(body.Encode())))
-
-	w := httptest.NewRecorder()
-
-	// driver mock model
-	driverDataMock := driverMock.DriverMongoExistMock{}
-	var driver driverInterface.DriverInterfacce
-	driver = &driverDataMock
-
-	// city mock model
-	cityModelMock := cityMock.CityMock{}
-	var city cityInterface.CityInterfacce
-	city = &cityModelMock
-
-	handler := FindDriver(driver, city)
-	handler.ServeHTTP(w, req)
-
-	if w.Code != http.StatusOK {
-		t.Errorf("Error actual = %v, expected = %v\n", w.Code, http.StatusOK)
-	}
-
-	// check the response
-	resp := w.Body.Bytes()
-	if resp == nil {
-		t.Error("Error Body result Empty")
-	}
-
-	RespResult := global.Response{}
-	err := json.Unmarshal(resp, &RespResult)
-	if err != nil {
-		t.Error(err)
-	}
-
-	fmt.Printf("response = %+v\n", RespResult)
+	return w.Code, RespResult.Message, nil
 
 }
