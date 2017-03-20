@@ -152,10 +152,25 @@ func FindDriver(driver driverInterface.DriverInterfacce, cityInterface cityInter
 			driver.SaveDriversRedis(drivers, district.Name, district.Id.Hex())
 
 		} else {
-			// we could not find any data in redis and mongo
-			w.WriteHeader(http.StatusOK)
-			global.SetResponse(w, "Success", "We couldn't find any driver")
-			return
+			// get drivers from mongodb
+			drivers = driver.GetAvailableDriver()
+			if len(drivers) > 0 {
+				driverResponse = drivers[0]
+
+				drivers[0].Status = false
+				driver.Update(drivers[0])
+
+				// update redis data by removing the first index
+				drivers = drivers[1:]
+				// save the drivers to redis replacing previous data
+				driver.SaveDriversRedis(drivers, district.Name, district.Id.Hex())
+			} else {
+				// we could not find any data in redis and mongo
+				w.WriteHeader(http.StatusOK)
+				global.SetResponse(w, "Success", "We couldn't find any driver")
+				return
+
+			}
 		}
 
 		//return succes response
