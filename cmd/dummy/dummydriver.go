@@ -7,9 +7,11 @@ import (
 	"strings"
 	"time"
 
+	// fake data library
 	"github.com/Gujarats/API-Golang/database"
 	"github.com/Gujarats/GenerateLocation"
 	"github.com/icrowley/fake"
+
 	mgo "gopkg.in/mgo.v2"
 	redis "gopkg.in/redis.v5"
 
