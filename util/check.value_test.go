@@ -31,6 +31,7 @@ func TestCheckValue(t *testing.T) {
 func TestCheckAttributeTrue(t *testing.T) {
 	// testing model driver
 	driverData := driver.DriverData{
+		Id:     "asdf",
 		Name:   "name",
 		Status: true,
 		Location: driver.GeoJson{
