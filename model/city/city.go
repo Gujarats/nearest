@@ -2,6 +2,8 @@ package city
 
 import (
 	"errors"
+	"log"
+	"os"
 
 	mgo "gopkg.in/mgo.v2"
 	"gopkg.in/mgo.v2/bson"
@@ -23,6 +25,13 @@ type GeoJson struct {
 // Global variable for storing database connection.
 var mongo *mgo.Session
 var redisConn *redis.Client
+var logger *log.Logger
+
+func init() {
+	logger = log.New(os.Stderr,
+		"City Model :: ",
+		log.Ldate|log.Ltime|log.Lshortfile)
+}
 
 func (c *City) GetConn(mongoConnection *mgo.Session, redisConnection *redis.Client) {
 	mongo = mongoConnection
@@ -42,6 +51,7 @@ func (c *City) CreateIndex(collectionName string) error {
 	var err error
 	err = checkMongoConnection(mongo)
 	if err != nil {
+		logger.Println(err)
 		return err
 	}
 
@@ -53,6 +63,7 @@ func (c *City) CreateIndex(collectionName string) error {
 	collection := mongo.DB("Driver").C(collectionName)
 	err = collection.EnsureIndex(index)
 	if err != nil {
+		logger.Println(err)
 		return err
 	}
 
@@ -107,6 +118,7 @@ func (c *City) GetNearestDistrict(cityName string, lat, lon float64, distance in
 
 	err = checkMongoConnection(mongo)
 	if err != nil {
+		logger.Println(err)
 		return city, err
 	}
 
@@ -124,6 +136,7 @@ func (c *City) GetNearestDistrict(cityName string, lat, lon float64, distance in
 		},
 	}).One(&city)
 	if err != nil {
+		logger.Println(err)
 		return city, err
 	}
 
