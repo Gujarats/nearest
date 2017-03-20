@@ -20,14 +20,14 @@ func (d *DriverMongoMock) Find(name string) *driver.DriverData {
 	return &driver.DriverData{}
 }
 
-func (d *DriverMongoMock) Update(driverData driver.DriverData) {}
+func (d *DriverMongoMock) Update(city, idDistrict string, driver driver.DriverData) {}
 
 func (d *DriverMongoMock) GetNearLocation(distance int64, lat, lon float64) []driver.DriverData {
 	return []driver.DriverData{}
 }
 
 // returning available driver
-func (d *DriverMongoMock) GetAvailableDriver() []driver.DriverData {
+func (d *DriverMongoMock) GetAvailableDriver(city, IdDistrict string) []driver.DriverData {
 	var drivers []driver.DriverData
 
 	drivers = []driver.DriverData{

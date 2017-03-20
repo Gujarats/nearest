@@ -20,7 +20,7 @@ func (d *DriverMongoExistMock) Find(name string) *driver.DriverData {
 	return &driver.DriverData{}
 }
 
-func (d *DriverMongoExistMock) Update(driverData driver.DriverData) {}
+func (d *DriverMongoExistMock) Update(city, idDistrict string, driver driver.DriverData) {}
 
 // return non-empty or exist mock data
 func (d *DriverMongoExistMock) GetNearLocation(distance int64, lat, lon float64) []driver.DriverData {
@@ -31,7 +31,7 @@ func (d *DriverMongoExistMock) GetNearLocation(distance int64, lat, lon float64)
 }
 
 // returning available driver
-func (d *DriverMongoExistMock) GetAvailableDriver() []driver.DriverData {
+func (d *DriverMongoExistMock) GetAvailableDriver(city, IdDistrict string) []driver.DriverData {
 	var drivers []driver.DriverData
 
 	drivers = []driver.DriverData{

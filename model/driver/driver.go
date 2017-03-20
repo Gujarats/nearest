@@ -2,6 +2,7 @@ package driver
 
 import (
 	"encoding/json"
+	"fmt"
 	"log"
 	"os"
 
@@ -110,8 +111,9 @@ func (d *DriverData) GetNearLocation(distance int64, lat, lon float64) []DriverD
 	return driverLocation
 }
 
-func (d *DriverData) GetAvailableDriver() []DriverData {
-	collection := mongo.DB("Driver").C("driver")
+func (d *DriverData) GetAvailableDriver(city, IdDistrict string) []DriverData {
+	collectionKey := city + "_district_" + IdDistrict
+	collection := mongo.DB("Driver").C(collectionKey)
 
 	var drivers []DriverData
 	err := collection.Find(bson.M{
@@ -176,8 +178,10 @@ func (d *DriverData) Find(name string) *DriverData {
 }
 
 //update data if exist if not the insert it
-func (d *DriverData) Update(driver DriverData) {
-	collection := mongo.DB("Driver").C("driver")
+func (d *DriverData) Update(city, idDistrict string, driver DriverData) {
+	collectionKey := city + "_district_" + idDistrict
+	fmt.Println("collecctionKey = ", collectionKey)
+	collection := mongo.DB("Driver").C(collectionKey)
 
 	_, err := collection.Upsert(bson.M{"_id": driver.Id}, driver)
 

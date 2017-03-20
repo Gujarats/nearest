@@ -22,14 +22,15 @@ func (d *DriverOnlyCityMock) Find(name string) *driver.DriverData {
 	return &driver.DriverData{}
 }
 
-func (d *DriverOnlyCityMock) Update(driverData driver.DriverData) {}
+func (d *DriverOnlyCityMock) Update(city, idDistrict string, driver driver.DriverData) {}
 
 func (d *DriverOnlyCityMock) GetNearLocation(distance int64, lat, lon float64) []driver.DriverData {
 	return []driver.DriverData{}
 }
 
 // returning available driver
-func (d *DriverOnlyCityMock) GetAvailableDriver() []driver.DriverData {
+
+func (d *DriverOnlyCityMock) GetAvailableDriver(city, IdDistrict string) []driver.DriverData {
 	var drivers []driver.DriverData
 
 	drivers = []driver.DriverData{
