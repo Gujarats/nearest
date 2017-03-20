@@ -1,8 +1,6 @@
 package cityMock
 
 import (
-	"errors"
-
 	mgo "gopkg.in/mgo.v2"
 	redis "gopkg.in/redis.v5"
 
@@ -10,46 +8,27 @@ import (
 )
 
 type CityMock struct {
+	Err    error
+	Cities []city.City
+	City   city.City
 }
 
-func (c *CityMock) GetConn(mongoConnection *mgo.Session, redisConnection *redis.Client) {
-}
-
-// check mongo connection if error return it.
-func checkMongoConnection(mongoConnection *mgo.Session) error {
-	if mongoConnection == nil {
-		return errors.New("No Mongo Connection")
-	}
-
-	return nil
-}
+func (c *CityMock) GetConn(mongoConnection *mgo.Session, redisConnection *redis.Client) {}
 
 func (c *CityMock) CreateIndex(collectionName string) error {
-	return nil
-
+	return c.Err
 }
 
 // Inserting district to mongo database
 func (c *CityMock) InsertDistrict(city string, distric int, lat, lon float64) error {
-	return nil
+	return c.Err
 }
 
 func (c *CityMock) AllDistrict(cityName string) ([]city.City, error) {
-	var cities []city.City
-
-	cities = []city.City{
-		{Name: "Bandung", District: 1},
-		{Name: "Bandung", District: 3},
-	}
-
-	return cities, nil
+	return c.Cities, c.Err
 }
 
 // return nil error and mock city
 func (c *CityMock) GetNearestDistrict(cityName string, lat, lon float64, distance int64) (city.City, error) {
-	var cityData city.City
-
-	cityData = city.City{Name: "Bandung"}
-
-	return cityData, nil
+	return c.City, c.Err
 }
