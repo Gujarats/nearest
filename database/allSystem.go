@@ -1,8 +1,22 @@
 package database
 
-// this file is used for combining all the connection from different database system
+import (
+	"log"
+	"os"
+)
 
-//we create different types of databse connection here
+// this file is used for combining all the connection from different database system.
+
+// create logger to print error in the console
+var logger *log.Logger
+
+func init() {
+	logger = log.New(os.Stderr,
+		"Controller Driver :: ",
+		log.Ldate|log.Ltime|log.Lshortfile)
+}
+
+//we create different types of databse connection here.
 func SystemConnection() map[string]interface{} {
 	listConnection := make(map[string]interface{})
 	var err error

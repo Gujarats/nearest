@@ -5,7 +5,6 @@ package database
 import (
 	"fmt"
 
-	"github.com/Gujarats/API-Golang/util/logger"
 	"github.com/jmoiron/sqlx"
 	_ "github.com/lib/pq"
 )
@@ -16,10 +15,6 @@ type PostgreHost struct {
 	Username string
 	Ssl      string
 	Password string
-}
-
-func init() {
-	logger.InitLogger("POSTGRE  :: ", "../logs", "Postgre.txt")
 }
 
 type PostgreSystem interface {
@@ -37,8 +32,9 @@ func (p *PostgreHost) Connect() *sqlx.DB {
 		p.Driver,
 		connection,
 	)
-
-	logger.CheckError("Postgre", err)
+	if err != nil {
+		logger.Panic(err)
+	}
 
 	return db
 }
