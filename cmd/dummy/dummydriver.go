@@ -1,11 +1,8 @@
 package main
 
 import (
-	"encoding/json"
 	"fmt"
 	"log"
-	"strings"
-	"time"
 
 	// fake data library
 	"github.com/Gujarats/GenerateLocation"
@@ -42,13 +39,6 @@ func main() {
 
 	// inserting dummy driver
 	insertDummyDriver(cityName, city, driverData)
-
-	//seed redis
-	startTime := time.Now()
-	seedDriverRedis(redisConn)
-	GetDriverRedis(redisConn)
-	fmt.Printf("takes time = %.6f\n", time.Since(startTime).Seconds())
-
 }
 
 // insert dummy location from latitude and longitude.
@@ -109,40 +99,6 @@ func insertDummyDriver(cityName string, city *cityModel.City, driverData *driver
 	}
 }
 
-func seedDriverRedis(redisConn *redis.Client) {
-	// create 20 driver
-	drivers := GenereateDriver(48.8588377, 2.2775176, 20)
-	city := City{
-		Name: "Paris",
-		Lat:  48.8588377,
-		Lon:  2.2775176,
-	}
-
-	byteDrivers, _ := json.Marshal(drivers)
-	byteCity, _ := json.Marshal(city)
-	data := string(byteCity) + "++" + string(byteDrivers)
-
-	redisConn.Set("someKey", data, 0)
-}
-
-func GetDriverRedis(redisConn *redis.Client) {
-	var city City
-	var drivers []Driver
-
-	dataString, err := redisConn.Get("someKey").Result()
-	if err != nil {
-		log.Panic(err)
-	}
-
-	// split data with ++
-	dataSplit := strings.Split(dataString, "++")
-	byteCity := []byte(dataSplit[0])
-	byteDrivers := []byte(dataSplit[1])
-
-	err = json.Unmarshal(byteCity, &city)
-	err = json.Unmarshal(byteDrivers, &drivers)
-}
-
 type Driver struct {
 	Name   string  `json:"name"`
 	Lat    float64 `json:"lat"`
@@ -156,6 +112,8 @@ type City struct {
 	Lon  float64 `json:"lon"`
 }
 
+// Generate dummy drivers this will return []Driver with given sum.
+// with new location from latitude and longitude given.
 func GenereateDriver(lat, lon float64, sum int) []Driver {
 	var drivers []Driver
 	location.SetupLocation(lat, lon)
