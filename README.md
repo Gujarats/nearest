@@ -63,17 +63,16 @@ Indexing is the important part here in order to gain speed for read performance.
 
 ## Prerequisite
 
-    * Install Mongodb.
+* Install Mongodb.
 
-    * Install Redis.
+* Install Redis.
 
 ### configuration 
-Go to `database` folder and config the host and port for `mongodb` and `redis`. As default it is run on default configuration for localhost.
-    You can change it on these file : 
+Go to `database` folder and config the host and port for `mongodb` and `redis`. As default it is run on default configuration for localhost. You can change it on these file : 
 
-    * mongodb.go 
+* mongodb.go 
 
-    * redis.go
+* redis.go
 
 <b>This is really important</b>
 After all database connections are set. The database should be seeded using dummy datas to mongodb.
