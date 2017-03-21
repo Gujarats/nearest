@@ -1,5 +1,7 @@
 package global
 
+// This file is used for sending a response. used in controller.
+
 import (
 	"encoding/json"
 	"net/http"
