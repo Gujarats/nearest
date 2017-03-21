@@ -86,25 +86,21 @@ The base location is :
 ## Structure Folder
 * `model `: this is where I store database transaction like read update delete etc.<br><br>
 
-The structure is : 
-
     * interface : define the interface of the struct.
 
     * mock : define the mock struct for unit test purposes.
 
     * file.go : all logic query the "file" named accordingly with the root folder.
+    
+    * And there is `global` package for define the global response on API
 
-And there is `global` package for define the global response on API
+* `cmd `: another main program to create dummy data.
 
-* `cmd `: another main program to create dummy data.<br><br>
-* `controller `: this is where business logic or handler to handle the incoming request.<br><br>
+* `controller `: this is where business logic or handler to handle the incoming request.Inside this folder there will be multiple folders and each folder will responsible for the hanlder and bussiness logic in this application.
 
-The structure is :
+* `database `: all database connection define here.
 
-Inside this folder there will be multiple folders and each folder will responsible for the hanlder and bussiness logic in this application.
-
-* `database `: all database connection define here.<br><br>
-* `util `: all the function that will be used in all others package.<br><br>
+* `util `: all the function that will be used in all others package.
 
 
 ## Flow code 
