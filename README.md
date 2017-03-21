@@ -3,11 +3,20 @@
 This is simple project for getting a driver like for example if you're using uber or grab or gojek to get a driver.
 
 Imagine if there are 2.500.000 drivers moving around in the city. let say in Bandung city.
-So if we created save those drivers in one table it is going to be a nightmare if you wanted to query the location of the drivers that nearest to user location. Why? because it is going to takes a lof of time to get only a driver in more than 2 million of rows. <br>
+So if we created save those drivers in one table it is going to be a nightmare if you wanted to query the location of the drivers that nearest to user location. Why? because it is going to takes a lof of time to get only a driver that near to your location in more than 2 million of rows.
 
-####
+# Tech Stack
+I choose No-SQL like : 
+* Mongodb
 
-So I created some mark in the city, and save those mark in the database. I use no-SQL and Redis to achieve this. These mark maybe varies in every city, but in this simple project I mark `1000` location in Bandung city.
+* Redis
+
+* Go
+
+No-SQL is very easy to modify whenever it comes to change or add the field of an object stored in the collections. And we can easily create another collections to make new documents to strore the new object. this flexible database is well suited for storing the location and drivers in the city. Because the collections and the data may varies in every each city. It is my personal opinion if you have yours and better for reading performance then I would love to hear.
+
+## Data structure
+So I created some mark in the city, and saved those mark in the database. I use no-SQL to achieve this. These mark maybe varies in every city, but in this simple project I mark the city for about `2500` location and it is generated from the algorithm in the `cmd/dummy`.
 
 The marking location algorithm is simple. Get based latitude and longitude from the edge of the city, in this case west and north. And then genereate a mark location from that base location to the east and south, those location will be separate from given distance.
 
@@ -28,12 +37,10 @@ I used <b>mongodb</b> here for the no-SQL database,but you can choose other no-S
 	}
 }
 ```
+Allright this one document will be generated in `Bandung` collection. You can always insert new mark location manually if you want. but this would be generated using `dummy data` in the `cmd/dummy` folder.
 
-Allright this one document will be generated in `Bandung` collection for more than 1000 documents for marking the location. You can always insert new mark location manually if you want. but this would be generated using `dummy data` in the `cmd/dummy` folder.
 
-And for getting the nearest location from given latitude and longitude I used `2dsphere` and creating the index to increase reading speed.
-
-After 1000 of mark location is generated. Now it is time to insert a dummy driver to every each marked location or district. I will insert 1000 drivers in every district. so if we have 2500 marked location that would genereate 2500.000 drivers document.
+After the mark location is generated the dummy drivers will be generated to every each marked location. I will insert 1000 drivers on each marked location. So if we have 2500 marked location that would genereate 2500.000 drivers document.
 
 A driver document in the other hand will look like this not really different from above document : 
 ```
@@ -50,23 +57,9 @@ A driver document in the other hand will look like this not really different fro
 	}
 }
 ```
-Also with indexes for the location and status important due to read speed.
 
-####
-
-
-
-
-
-
-
-
-## Structure Folder
---> model : this is where I store database transaction like read update delete etc.<br><br>
---> controller : this is where business logic or handler to handle the incoming request.<br><br>
---> database : all database connection define here.<br><br>
---> logs : this folder is used for storing the log files.<br><br>
---> util : all the function that will be used in all others package.<br><br>
+#### Indexing
+Indexing is the important part here in order to gain speed for read performance. For getting the nearest marked location in the city from given latitude and longitude I used `2dsphere` to index the `location` field in order to increase reading speed. For the drivers document the indexes field are `status` and `location`.
 
 ## Prerequisite
     * Install Mongodb.
@@ -79,34 +72,34 @@ Go to `database` folder and config the host and port for `mongodb` and `redis`. 
     * redis.go
 
 <b>This is really important</b>
-After all database connections are set. Now it is time to seed a dummy data to mongodb.
+After all database connections are set. The database should be seeded using dummy datas to mongodb.
 go to `cmd/dummy` and build it using `go build` and then run the program using `./dummy` command.
-This will generate a dummy location in Bandung :
+This will generate a marked location in Bandung and dummy drivers in every each marked location and also with the indexes field.  
+The base location is : 
 	* latitude = -6.8647721
 	* longitude = 107.553501
 
-### Note Generating location database.
-the base location 
+## Structure Folder
+* `model `: this is where I store database transaction like read update delete etc.<br><br>
 
-## Code Structure
-<b> Model </b>
-    - interface : define the interface of the struct.
-    - mock : define the mock struct for unit test purposes.
+### Model structure
+    * interface : define the interface of the struct.
+    * mock : define the mock struct for unit test purposes.
+    * file.go : all logic query the "file" named accordingly with the root folder.
+
 And there is `global` package for define the global response on API
 
+* `cmd `: another main program to create dummy data.<br><br>
+* `controller `: this is where business logic or handler to handle the incoming request.<br><br>
+### Controller structure
+Inside this folder there will be multiple folders and each folder will responsible for the hanlder and bussiness logic in this application.
 
-<b> Util </b>
-This package is used to declare the global function that used for all packages.
+* `database `: all database connection define here.<br><br>
+* `util `: all the function that will be used in all others package.<br><br>
 
 
-<b> Database</b>
-This package is to define all the database connection.
-
-<b> Controller </b>
-this package is used for declare the business logic and the hanlder for handling the incoming request.
-
-<b>Flow code </b>
-In app.go : call all the connection database (database) -> pass it to model (model) -> call hanlder for hanlde the incoming request (controller)
+## Flow code 
+In app.go : call all the connection databases-> pass them to models -> call hanlder for hanlde the incoming request.
 Basically liket this : main->database-> model -> handler->controller
 
 
