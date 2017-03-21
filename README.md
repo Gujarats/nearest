@@ -84,7 +84,7 @@ The base location is :
 	* latitude = -6.8647721, longitude = 107.553501
 
 ## Structure Folder
-* `model `: this is where I store database transaction like read update delete etc.<br><br>
+* `model `: this is where I store database transaction like read update delete etc.
 
     * interface : define the interface of the struct.
 
