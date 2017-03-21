@@ -8,12 +8,13 @@ import (
 	"time"
 
 	// fake data library
-	"github.com/Gujarats/API-Golang/database"
 	"github.com/Gujarats/GenerateLocation"
 	"github.com/icrowley/fake"
 
 	mgo "gopkg.in/mgo.v2"
 	redis "gopkg.in/redis.v5"
+
+	"github.com/Gujarats/API-Golang/database"
 
 	cityModel "github.com/Gujarats/API-Golang/model/city"
 	driverModel "github.com/Gujarats/API-Golang/model/driver"
