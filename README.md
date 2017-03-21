@@ -62,13 +62,17 @@ A driver document in the other hand will look like this not really different fro
 Indexing is the important part here in order to gain speed for read performance. For getting the nearest marked location in the city from given latitude and longitude I used `2dsphere` to index the `location` field in order to increase reading speed. For the drivers document the indexes field are `status` and `location`.
 
 ## Prerequisite
+
     * Install Mongodb.
+
     * Install Redis.
 
 ### configuration 
 Go to `database` folder and config the host and port for `mongodb` and `redis`. As default it is run on default configuration for localhost.
     You can change it on these file : 
+
     * mongodb.go 
+
     * redis.go
 
 <b>This is really important</b>
@@ -76,22 +80,27 @@ After all database connections are set. The database should be seeded using dumm
 go to `cmd/dummy` and build it using `go build` and then run the program using `./dummy` command.
 This will generate a marked location in Bandung and dummy drivers in every each marked location and also with the indexes field.  
 The base location is : 
-	* latitude = -6.8647721
-	* longitude = 107.553501
+
+	* latitude = -6.8647721, longitude = 107.553501
 
 ## Structure Folder
 * `model `: this is where I store database transaction like read update delete etc.<br><br>
 
-### Model structure
+The structure is : 
+
     * interface : define the interface of the struct.
+
     * mock : define the mock struct for unit test purposes.
+
     * file.go : all logic query the "file" named accordingly with the root folder.
 
 And there is `global` package for define the global response on API
 
 * `cmd `: another main program to create dummy data.<br><br>
 * `controller `: this is where business logic or handler to handle the incoming request.<br><br>
-### Controller structure
+
+The structure is :
+
 Inside this folder there will be multiple folders and each folder will responsible for the hanlder and bussiness logic in this application.
 
 * `database `: all database connection define here.<br><br>
