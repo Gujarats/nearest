@@ -2,14 +2,15 @@ package driver
 
 import (
 	"encoding/json"
+	"log"
 	"net/http"
+	"os"
 	"strconv"
 	"time"
 
 	"gopkg.in/mgo.v2/bson"
 
 	"github.com/Gujarats/API-Golang/util"
-	"github.com/Gujarats/API-Golang/util/logger"
 
 	"github.com/Gujarats/API-Golang/model/city/interface"
 
@@ -19,9 +20,18 @@ import (
 	"github.com/Gujarats/API-Golang/model/global"
 )
 
+// create logger to print error in the console
+var logger *log.Logger
+
+func init() {
+	logger = log.New(os.Stderr,
+		"Controller Driver :: ",
+		log.Ldate|log.Ltime|log.Lshortfile)
+}
+
 // find specific driver with their ID or name.
 // if the desired data didn't exist then insert new data
-func UpdateDriver(driver driverInterface.DriverInterfacce) http.Handler {
+func UpdateDriver(driver driverInterface.DriverInterfacce, cityInterface cityInterface.CityInterfacce) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		//start time for lenght of the process
 		startTimer := time.Now()
@@ -33,10 +43,11 @@ func UpdateDriver(driver driverInterface.DriverInterfacce) http.Handler {
 		lat := r.FormValue("latitude")
 		lon := r.FormValue("longitude")
 		status := r.FormValue("status")
+		city := r.FormValue("city")
 
-		isAllExist := util.CheckValue(id, name, lat, lon, status)
+		isAllExist := util.CheckValue(id, name, lat, lon, status, city)
 		if !isAllExist {
-			logger.PrintLog("Required Params Empty")
+			logger.Println("Required Params Empty")
 
 			//return Bad response
 			w.WriteHeader(http.StatusBadRequest)
@@ -48,7 +59,7 @@ func UpdateDriver(driver driverInterface.DriverInterfacce) http.Handler {
 		statusBool, err := strconv.ParseBool(status)
 		if err != nil {
 			//return Bad response
-			logger.PrintLog("Failed to Parse Boolean")
+			logger.Println("Failed to Parse Boolean")
 			w.WriteHeader(http.StatusBadRequest)
 			global.SetResponse(w, "Failed", "Parse Boolean Erro")
 			return
@@ -65,13 +76,34 @@ func UpdateDriver(driver driverInterface.DriverInterfacce) http.Handler {
 		latFloat := convertedFloat[0]
 		lonFloat := convertedFloat[1]
 
+		// checks drivers location which district they are now
+		district, err := cityInterface.GetNearestDistrict(city, latFloat, lonFloat, 100)
+		if err != nil {
+			w.WriteHeader(http.StatusInternalServerError)
+			global.SetResponse(w, "Failed", "Failed to get nearest district")
+			return
+
+		}
+
+		if district.Name == "" {
+			w.WriteHeader(http.StatusOK)
+			global.SetResponse(w, "Success", "No nearest district found!")
+			return
+
+		}
+
 		driverData := driverModel.DriverData{Id: bson.ObjectId(id), Name: name, Status: statusBool, Location: driverModel.GeoJson{Coordinates: []float64{lonFloat, latFloat}}}
-		driver.Update("test", "test", driverData)
+		err = driver.Update(district.Name, district.Id.Hex(), driverData)
+		if err != nil {
+			w.WriteHeader(http.StatusInternalServerError)
+			global.SetResponse(w, "Failed", "Failed to update ther driver")
+			return
+		}
 
 		//return succes response
 		elpasedTime := time.Since(startTimer).Seconds()
 		w.WriteHeader(http.StatusOK)
-		global.SetResponseTime(w, "Succes", "Driver Inserted", elpasedTime)
+		global.SetResponseTime(w, "Succes", "Driver Updated", elpasedTime)
 		return
 	})
 
@@ -91,7 +123,7 @@ func FindDriver(driver driverInterface.DriverInterfacce, cityInterface cityInter
 		//checking empty value
 		checkValue := util.CheckValue(lat, lon, city, distance)
 		if !checkValue {
-			logger.PrintLog("Required Params Empty")
+			logger.Println("Required Params Empty")
 
 			//return Bad response
 			w.WriteHeader(http.StatusBadRequest)
@@ -144,7 +176,10 @@ func FindDriver(driver driverInterface.DriverInterfacce, cityInterface cityInter
 			// update the driver's status to unavailable in mongodb
 			// Latitude is 1 in the index and Longitude is 0. Rules from mongodb
 			drivers[0].Status = false
-			driver.Update(district.Name, district.Id.Hex(), drivers[0])
+			err := driver.Update(district.Name, district.Id.Hex(), drivers[0])
+			if err != nil {
+
+			}
 
 			// update redis data by removing the first index
 			drivers = drivers[1:]
@@ -158,7 +193,12 @@ func FindDriver(driver driverInterface.DriverInterfacce, cityInterface cityInter
 				driverResponse = drivers[0]
 
 				drivers[0].Status = false
-				driver.Update(district.Name, district.Id.Hex(), drivers[0])
+				err := driver.Update(district.Name, district.Id.Hex(), drivers[0])
+				if err != nil {
+					w.WriteHeader(http.StatusInternalServerError)
+					global.SetResponse(w, "Failed", "Failed to update ther driver")
+					return
+				}
 
 				// update redis data by removing the first index
 				drivers = drivers[1:]
@@ -197,7 +237,7 @@ func InsertDriver(driver driverInterface.DriverInterfacce) http.Handler {
 
 		isAllExist := util.CheckValue(name, lat, lon, status)
 		if !isAllExist {
-			logger.PrintLog("Required Params Empty")
+			logger.Println("Required Params Empty")
 
 			//return Bad response
 			w.WriteHeader(http.StatusBadRequest)
@@ -209,7 +249,7 @@ func InsertDriver(driver driverInterface.DriverInterfacce) http.Handler {
 		statusBool, err := strconv.ParseBool(status)
 		if err != nil {
 			//return Bad response
-			logger.PrintLog("Failed to Parse Boolean")
+			logger.Println("Failed to Parse Boolean")
 			w.WriteHeader(http.StatusBadRequest)
 			global.SetResponse(w, "Failed", "Parse Boolean Erro")
 			return

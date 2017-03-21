@@ -1,13 +1,8 @@
 package driver
 
 import (
-	"bytes"
-	"encoding/json"
 	"errors"
 	"net/http"
-	"net/http/httptest"
-	"net/url"
-	"strconv"
 	"testing"
 
 	"github.com/Gujarats/API-Golang/model/city"
@@ -15,11 +10,6 @@ import (
 
 	"github.com/Gujarats/API-Golang/model/city/mock"
 	"github.com/Gujarats/API-Golang/model/driver/mock"
-
-	"github.com/Gujarats/API-Golang/model/city/interface"
-	"github.com/Gujarats/API-Golang/model/driver/interface"
-
-	"github.com/Gujarats/API-Golang/model/global"
 )
 
 func TestFindDriver(t *testing.T) {
@@ -47,6 +37,7 @@ func TestFindDriver(t *testing.T) {
 				Driver: driver.DriverData{
 					Name: "test driver",
 				},
+				Err: nil,
 			},
 
 			Status:  http.StatusInternalServerError,
@@ -71,6 +62,7 @@ func TestFindDriver(t *testing.T) {
 				Driver: driver.DriverData{
 					Name: "test driver",
 				},
+				Err: nil,
 			},
 
 			Status:  http.StatusOK,
@@ -92,6 +84,7 @@ func TestFindDriver(t *testing.T) {
 				Driver: driver.DriverData{
 					Name: "test driver",
 				},
+				Err: nil,
 			},
 			Status:  http.StatusInternalServerError,
 			Message: "No district found",
@@ -112,6 +105,7 @@ func TestFindDriver(t *testing.T) {
 					{Name: "test driver"},
 					{Name: "test driver"},
 				},
+				Err: nil,
 			},
 			Status:  http.StatusOK,
 			Message: "Data found",
@@ -134,7 +128,7 @@ func TestFindDriver(t *testing.T) {
 	}
 
 	for indexTest, testObject := range testObjects {
-		actualStatus, actualMessage, err := createRequest(&testObject.CityMock, &testObject.DriverMock)
+		actualStatus, actualMessage, err := createFindDriverRequest(&testObject.CityMock, &testObject.DriverMock)
 		if err != nil {
 			t.Error(err)
 		}
@@ -148,49 +142,4 @@ func TestFindDriver(t *testing.T) {
 
 		}
 	}
-}
-
-// create test request that pass all parameters requirement.
-func createRequest(cityMock *cityMock.CityMock, driverMock *driverMock.DriverDataMock) (int, string, error) {
-	// create body params
-	body := url.Values{}
-	body.Set("latitude", "48.8588377")
-	body.Set("longitude", "2.2775176")
-	body.Set("city", "kuningan")
-	body.Set("distance", "200")
-
-	//we pass a dummy value to pass the required params
-	req := httptest.NewRequest("POST", "/driver/find", bytes.NewBufferString(body.Encode()))
-	req.Header.Add("Content-Type", "application/x-www-form-urlencoded")
-	req.Header.Add("Content-Length", strconv.Itoa(len(body.Encode())))
-
-	w := httptest.NewRecorder()
-
-	// driver mock model
-	var driver driverInterface.DriverInterfacce
-	driver = driverMock
-
-	// city mock model
-	var city cityInterface.CityInterfacce
-	city = cityMock
-
-	// craete request
-	handler := FindDriver(driver, city)
-	handler.ServeHTTP(w, req)
-
-	// check the response
-	resp := w.Body.Bytes()
-	if resp == nil {
-		return -1, "", errors.New("Response body is empty")
-	}
-
-	// response result
-	RespResult := global.Response{}
-	err := json.Unmarshal(resp, &RespResult)
-	if err != nil {
-		return -1, "", err
-	}
-
-	return w.Code, RespResult.Message, nil
-
 }
