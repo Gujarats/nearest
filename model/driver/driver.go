@@ -2,7 +2,6 @@ package driver
 
 import (
 	"encoding/json"
-	"fmt"
 	"log"
 	"os"
 
@@ -178,13 +177,15 @@ func (d *DriverData) Find(name string) *DriverData {
 }
 
 //update data if exist if not the insert it
-func (d *DriverData) Update(city, idDistrict string, driver DriverData) {
+func (d *DriverData) Update(city, idDistrict string, driver DriverData) error {
 	collectionKey := city + "_district_" + idDistrict
-	fmt.Println("collecctionKey = ", collectionKey)
 	collection := mongo.DB("Driver").C(collectionKey)
 
 	_, err := collection.Upsert(bson.M{"_id": driver.Id}, driver)
+	if err != nil {
+		logger.Println(err)
+		return err
+	}
 
-	logger.Println(err)
-
+	return nil
 }

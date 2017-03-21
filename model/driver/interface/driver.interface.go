@@ -11,7 +11,7 @@ type DriverInterfacce interface {
 	Insert(collectionName string, name string, lat, lon float64, status bool)
 	Find(name string) *driver.DriverData
 
-	Update(city, idDistrict string, driverData driver.DriverData)
+	Update(city, idDistrict string, driverData driver.DriverData) error
 
 	GetNearLocation(distance int64, lat, lon float64) []driver.DriverData
 	GetAvailableDriver(city, IdDistrict string) []driver.DriverData

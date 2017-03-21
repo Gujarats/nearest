@@ -9,6 +9,7 @@ import (
 type DriverDataMock struct {
 	Drivers []driver.DriverData
 	Driver  driver.DriverData
+	Err     error
 }
 
 //===================MongoDB====================//
@@ -23,7 +24,9 @@ func (d *DriverDataMock) Find(name string) *driver.DriverData {
 	return &d.Driver
 }
 
-func (d *DriverDataMock) Update(city, idDistrict string, driver driver.DriverData) {}
+func (d *DriverDataMock) Update(city, idDistrict string, driver driver.DriverData) error {
+	return d.Err
+}
 
 func (d *DriverDataMock) GetNearLocation(distance int64, lat, lon float64) []driver.DriverData {
 	return d.Drivers
