@@ -58,7 +58,7 @@ func main() {
 
 	// driver router
 	http.Handle("/driver/find", driverController.FindDriver(driver, city))
-	http.Handle("/driver/update", driverController.UpdateDriver(driver))
+	http.Handle("/driver/update", driverController.UpdateDriver(driver, city))
 
 	port := ":8080"
 	fmt.Println("App Started on port = ", port)
