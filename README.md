@@ -80,7 +80,7 @@ go to `cmd/dummy` and build it using `go build` and then run the program using `
 This will generate a marked location in Bandung and dummy drivers in every each marked location and also with the indexes field.  
 The base location is : 
 
-	* latitude = -6.8647721, longitude = 107.553501
+* latitude = -6.8647721, longitude = 107.553501
 
 ## Structure Folder
 * `model `: this is where I store database transaction like read update delete etc.
