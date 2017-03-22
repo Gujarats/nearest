@@ -5,7 +5,6 @@ import (
 	"log"
 	"net/http"
 
-	"github.com/Gujarats/API-Golang/config"
 	"github.com/Gujarats/API-Golang/database"
 
 	driverModel "github.com/Gujarats/API-Golang/model/driver"
@@ -21,8 +20,6 @@ import (
 	mgo "gopkg.in/mgo.v2"
 	redis "gopkg.in/redis.v5"
 )
-
-var cfg config.Config
 
 func init() {
 	logger.InitLogger("App :: ", "./logs/", "App.txt")
