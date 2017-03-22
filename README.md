@@ -13,7 +13,7 @@ So if we created save those drivers in one table it is going to be a nightmare i
 
 * Go
 
-No-SQL is very easy to modify whenever it comes to change or add the field of an object stored in the collections. And we can easily create another collections to make new documents to strore the new object. this flexible database is well suited for storing the location and drivers in the city. Because the collections and the data may varies in every each city. It is my personal opinion if you have yours and better for reading performance then I would love to hear.
+No-SQL is very easy to modify whenever it comes to change or add the field of an object stored in the collections. And we can easily create another collections to make new documents to strore the new object. this flexible database is well suited for storing the location and drivers in the city. Because the collections and the data may varies in every each city. It is my personal opinion if you have yours and better in performance then I would love to hear.
 
 ## Data structure
 So I created some mark in the city, and saved those mark in the database. I use no-SQL to achieve this. These mark maybe varies in every city, but in this simple project I mark the city for about `2500` location and it is generated from the algorithm in the `cmd/dummy`.
