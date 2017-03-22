@@ -62,11 +62,12 @@ func createFindDriverRequest(cityMock *cityMock.CityMock, driverMock *driverMock
 
 }
 
+// create update request with pass alll the requirement parameters
 func createUpdateDriverRequest(cityMock *cityMock.CityMock, driverMock *driverMock.DriverDataMock) (int, string, error) {
 	// create body params
 	body := url.Values{}
 	body.Set("name", "driver1")
-	body.Set("id", "DummyId")
+	body.Set("id", "58ccebc7ac702fc793f9e384")
 	body.Set("latitude", "48.8588377")
 	body.Set("longitude", "2.2775176")
 	body.Set("status", "true")

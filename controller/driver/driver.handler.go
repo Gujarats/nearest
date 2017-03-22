@@ -55,11 +55,19 @@ func UpdateDriver(driver driverInterface.DriverInterfacce, cityInterface cityInt
 			return
 		}
 
+		// check id for validation format
+		ok := bson.IsObjectIdHex(id)
+		if !ok {
+			//return Bad response
+			w.WriteHeader(http.StatusBadRequest)
+			global.SetResponse(w, "Failed", "Invalid Id format")
+			return
+		}
+
 		// convert string to bool
 		statusBool, err := strconv.ParseBool(status)
 		if err != nil {
 			//return Bad response
-			logger.Println("Failed to Parse Boolean")
 			w.WriteHeader(http.StatusBadRequest)
 			global.SetResponse(w, "Failed", "Parse Boolean Erro")
 			return
@@ -92,11 +100,11 @@ func UpdateDriver(driver driverInterface.DriverInterfacce, cityInterface cityInt
 
 		}
 
-		driverData := driverModel.DriverData{Id: bson.ObjectId(id), Name: name, Status: statusBool, Location: driverModel.GeoJson{Coordinates: []float64{lonFloat, latFloat}}}
+		driverData := driverModel.DriverData{Id: bson.ObjectIdHex(id), Name: name, Status: statusBool, Location: driverModel.GeoJson{Type: "Point", Coordinates: []float64{lonFloat, latFloat}}}
 		err = driver.Update(district.Name, district.Id.Hex(), driverData)
 		if err != nil {
 			w.WriteHeader(http.StatusInternalServerError)
-			global.SetResponse(w, "Failed", "Failed to update ther driver")
+			global.SetResponse(w, "Failed", "Failed to update the driver")
 			return
 		}
 
