@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"log"
 	"os"
+	"time"
 
 	mgo "gopkg.in/mgo.v2"
 	"gopkg.in/mgo.v2/bson"
@@ -53,13 +54,14 @@ func (d *DriverData) SaveDriversRedis(drivers []DriverData, city, idDistrict str
 	byteDrivers, _ := json.Marshal(drivers)
 
 	// the key here is city
-	redisConn.Set(city+"_district_"+idDistrict, byteDrivers, 0)
+	key := getFormatDistrict(city, idDistrict)
+	redisConn.Set(key, byteDrivers, 0)
 }
 
 // the format of the key is : city_district_id-mongodb
 // return the Drivers data from redis
 func (d *DriverData) DriversRedis(city, idDistrict string) []DriverData {
-	key := city + "_district_" + idDistrict
+	key := getFormatDistrict(city, idDistrict)
 	var drivers []DriverData
 
 	driversBytes, err := redisConn.Get(key).Bytes()
@@ -81,6 +83,33 @@ func (d *DriverData) DriversRedis(city, idDistrict string) []DriverData {
 	}
 
 	return drivers
+}
+
+// saving the last location drivers in redis.
+// the purpose is so that we can make sure the drivers data is not exist in the last collection,
+// if in case the drivers go to new dristrict and update his status in new district.
+func (d *DriverData) SaveLastDistrict(idDriver, city, idDistrict string) {
+
+	key := getDriverFormatkey(idDriver)
+
+	data := getFormatDistrict(city, idDistrict)
+
+	redisConn.Set(key, data, 0)
+}
+
+// to get driver last location we used the date and their unique id from redis
+// and get the
+func (d *DriverData) GetLastDistrict(idDriver string) string {
+
+	key := getDriverFormatkey(idDriver)
+
+	result, err := redisConn.Get(key).Result()
+	if err != nil {
+		return ""
+	}
+
+	return result
+
 }
 
 //===================MongoDB====================//
@@ -110,8 +139,9 @@ func (d *DriverData) GetNearLocation(distance int64, lat, lon float64) []DriverD
 	return driverLocation
 }
 
-func (d *DriverData) GetAvailableDriver(city, IdDistrict string) []DriverData {
-	collectionKey := city + "_district_" + IdDistrict
+func (d *DriverData) GetAvailableDriver(city, idDistrict string) []DriverData {
+	collectionKey := getFormatDistrict(city, idDistrict)
+
 	collection := mongo.DB("Driver").C(collectionKey)
 
 	var drivers []DriverData
@@ -178,7 +208,7 @@ func (d *DriverData) Find(name string) *DriverData {
 
 //update data if exist if not the insert it
 func (d *DriverData) Update(city, idDistrict string, driver DriverData) error {
-	collectionKey := city + "_district_" + idDistrict
+	collectionKey := getFormatDistrict(city, idDistrict)
 	collection := mongo.DB("Driver").C(collectionKey)
 
 	_, err := collection.Upsert(bson.M{"_id": driver.Id}, driver)
@@ -188,4 +218,31 @@ func (d *DriverData) Update(city, idDistrict string, driver DriverData) error {
 	}
 
 	return nil
+}
+
+func (d *DriverData) Remove(idDriver, collectionKey string) {
+	collection := mongo.DB("Driver").C(collectionKey)
+	err := collection.Remove(
+		bson.M{
+			"_id": bson.ObjectIdHex(idDriver),
+		},
+	)
+
+	if err != nil {
+		logger.Println(err)
+	}
+
+}
+
+// ============= PRIVATE FUNCTION ============= //
+
+// return format district it is for the naming for the collections in every marked location in the city.
+func getFormatDistrict(city, idDistrict string) string {
+	return city + "_district_" + idDistrict
+}
+
+// return driver key format for redis key
+func getDriverFormatkey(idDriver string) string {
+	dateNow := time.Now().Format("02-01-2006")
+	return idDriver + "_" + dateNow
 }

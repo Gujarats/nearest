@@ -7,9 +7,10 @@ import (
 )
 
 type DriverDataMock struct {
-	Drivers []driver.DriverData
-	Driver  driver.DriverData
-	Err     error
+	Drivers      []driver.DriverData
+	Driver       driver.DriverData
+	Err          error
+	LastDistrict string
 }
 
 //===================MongoDB====================//
@@ -37,6 +38,8 @@ func (d *DriverDataMock) GetAvailableDriver(city, IdDistrict string) []driver.Dr
 	return d.Drivers
 }
 
+func (d *DriverDataMock) Remove(idDriver, collectionKey string) {}
+
 //===================REDIS====================//
 
 func (d *DriverDataMock) SaveDriversRedis(drivers []driver.DriverData, city, idDistrict string) {
@@ -44,4 +47,12 @@ func (d *DriverDataMock) SaveDriversRedis(drivers []driver.DriverData, city, idD
 
 func (d *DriverDataMock) DriversRedis(city, idDistrict string) []driver.DriverData {
 	return d.Drivers
+}
+
+func (d *DriverDataMock) SaveLastDistrict(idDriver, city, idDistrict string) {
+
+}
+
+func (d *DriverDataMock) GetLastDistrict(driverId string) string {
+	return d.LastDistrict
 }
