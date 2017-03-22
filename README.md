@@ -116,6 +116,7 @@ for find API
 ```shell
 $ echo "GET http://localhost:8080/driver/find?&city=Bandung&latitude=-6.978690151910177&longitude=108.12333333333333&distance=100" | vegeta attack -duration=60s -rate=50 | tee results_find_driver.bin | vegeta report
 ```
+From above two commands I careated 50 request per second in 60 second.
 ![result_load_testing_from_local](https://github.com/Gujarats/API-Golang/blob/master/result_pike_local.png)
 
 
