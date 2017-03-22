@@ -35,10 +35,6 @@ func main() {
 	// get postgre connection.
 	mongoConn := listConnection["mongodb"].(*mgo.Session)
 
-	//pass connection to model to model
-	//reviewData := &reviewModel.ReviewData{}
-	//reviewData.GetConn(postgreConn)
-
 	// set driver interface
 	var driver driverInterface.DriverInterfacce
 	driverData := &driverModel.DriverData{}
