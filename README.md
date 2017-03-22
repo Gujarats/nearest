@@ -106,4 +106,18 @@ The base location is :
 In app.go : call all the connection databases-> pass them to models -> call hanlder for hanlde the incoming request.
 Basically the flow look like this : main->database-> model -> handler->controller
 
+## Load testing
+I'm using [Vegeta](https://github.com/tsenart/vegeta) tools for load testing. I test the update and find API, the first test happens is find API for 5 seconds and the after that update API. here the command to do the testing.
+for update API
+```shell
+$ echo "GET http://localhost:8080/driver/update?&city=Bandung&latitude=-6.978690151910177&longitude=108.12333333333333&distance=100&id=58ccebc7ac702fc793f9e384&status=true&name=asdf" | vegeta attack -duration=60s -rate=50 | tee results4.bin | vegeta report
+```
+for find API
+```shell
+$ echo "GET http://localhost:8080/driver/find?&city=Bandung&latitude=-6.978690151910177&longitude=108.12333333333333&distance=100" | vegeta attack -duration=60s -rate=50 | tee results_find_driver.bin | vegeta report
+```
+![result_load_testing_from_local](https://github.com/Gujarats/API-Golang/blob/master/result_pike_local.png)
+
+
+
 
