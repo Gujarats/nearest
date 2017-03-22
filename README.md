@@ -104,6 +104,6 @@ The base location is :
 
 ## Flow code 
 In app.go : call all the connection databases-> pass them to models -> call hanlder for hanlde the incoming request.
-Basically liket this : main->database-> model -> handler->controller
+Basically the flow look like this : main->database-> model -> handler->controller
 
 
