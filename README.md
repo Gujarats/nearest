@@ -6,7 +6,7 @@ Imagine if there are 2.500.000 drivers moving around in the city. let say in Ban
 So if we created save those drivers in one table it is going to be a nightmare if you wanted to query the location of the drivers that nearest to user location. Why? because it is going to takes a lof of time to get only a driver that near to your location in more than 2 million of rows.
 
 # Tech Stack
-I choose No-SQL like : 
+
 * Mongodb
 
 * Redis
