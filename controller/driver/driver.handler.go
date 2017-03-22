@@ -84,6 +84,9 @@ func UpdateDriver(driver driverInterface.DriverInterfacce, cityInterface cityInt
 		latFloat := convertedFloat[0]
 		lonFloat := convertedFloat[1]
 
+		// check driver last location which district they were before
+		lastDistrict := driver.GetLastDistrict(id)
+
 		// checks drivers location which district they are now
 		district, err := cityInterface.GetNearestDistrict(city, latFloat, lonFloat, 100)
 		if err != nil {
@@ -93,10 +96,23 @@ func UpdateDriver(driver driverInterface.DriverInterfacce, cityInterface cityInt
 
 		}
 
+		// checking if we got the current district data
 		if district.Name == "" {
 			w.WriteHeader(http.StatusOK)
 			global.SetResponse(w, "Success", "No nearest district found!")
 			return
+
+		}
+
+		// check if the location is the same or not, if not then remove the data from the lastdistrict.
+		// format current district to meet the last district format
+		if lastDistrict != "" {
+			// lastDistrict is not empty from redis check if it is the same as current location
+			if district.Name+"_district_"+district.Id.Hex() != lastDistrict {
+				// remove the driver data in the last district
+				// lastDistrict must formatted like collectionKey for district collections
+				driver.Remove(id, lastDistrict)
+			}
 
 		}
 
@@ -180,6 +196,8 @@ func FindDriver(driver driverInterface.DriverInterfacce, cityInterface cityInter
 		if len(drivers) > 0 {
 			// get the first index drvier from redis and save it again to redis
 			driverResponse = drivers[0]
+
+			driver.SaveLastDistrict(drivers[0].Id.Hex(), district.Name, district.Id.Hex())
 
 			// update the driver's status to unavailable in mongodb
 			// Latitude is 1 in the index and Longitude is 0. Rules from mongodb
