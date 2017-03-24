@@ -137,7 +137,6 @@ func FindDriver(driver driverInterface.DriverInterfacce, cityInterface cityInter
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		//start time for lenght of the process
 		startTimer := time.Now()
-		w.Header().Set("Access-Control-Allow-Methods", "GET")
 
 		lat := r.FormValue("latitude")
 		lon := r.FormValue("longitude")
