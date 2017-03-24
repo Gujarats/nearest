@@ -94,7 +94,19 @@ func (d *DriverData) SaveLastDistrict(idDriver, city, idDistrict string) {
 
 	data := getFormatDistrict(city, idDistrict)
 
+	dateNow := time.Now().Format("02-01-2006")
+
+	// set expire time at midnight
+	expireTime := dateNow + "00:00"
+
+	setTime, err := time.Parse("02-01-2006 15:04", expireTime)
+	if err != nil {
+		logger.Println(err)
+	}
+
 	redisConn.Set(key, data, 0)
+	redisConn.ExpireAt(key, setTime)
+
 }
 
 // to get driver last location we used the date and their unique id from redis
