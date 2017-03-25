@@ -8,7 +8,6 @@ import (
 )
 
 var file *os.File
-var logger *log.Logger
 
 func init() {
 	var err error
@@ -16,9 +15,6 @@ func init() {
 	if err != nil {
 		panic(err)
 	}
-	logger = log.New(os.Stderr,
-		"Test Log :: ",
-		log.Ldate|log.Ltime|log.Lshortfile)
 }
 
 // checking if file created is exist
@@ -36,26 +32,29 @@ func TestWriteLog(t *testing.T) {
 	inputData := "data log here"
 
 	// set input error
+	logger := log.New(os.Stderr,
+		"Test Log :: ",
+		log.Ldate|log.Ltime|log.Lshortfile)
 	logger.SetOutput(file)
 	logger.Println(inputData)
 
 	//checking file location
 	_, err := os.Stat(filePath + fileName)
 	if err != nil {
-		t.Error(err)
+		t.Errorf("Error file is not exist = %v\n", err)
 	}
 
 	//opening file
 	f, err := os.OpenFile(filePath+fileName, os.O_RDWR|os.O_CREATE|os.O_APPEND, os.ModePerm)
 	if err != nil {
-		t.Error(err)
+		t.Errorf("Error opening file = %v\n", err)
 	}
 
 	//get the data from the file
 	result := make([]byte, 100)
 	_, err = f.Read(result)
 	if err != nil {
-		t.Error(err)
+		t.Errorf("Cannot read file = %v\n", err)
 	}
 
 	if len(result) == 0 {
