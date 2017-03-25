@@ -97,7 +97,7 @@ func (d *DriverData) SaveLastDistrict(idDriver, city, idDistrict string) {
 	dateNow := time.Now().Format("02-01-2006")
 
 	// set expire time at midnight
-	expireTime := dateNow + "00:00"
+	expireTime := dateNow + " 00:00"
 
 	setTime, err := time.Parse("02-01-2006 15:04", expireTime)
 	if err != nil {
