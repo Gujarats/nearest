@@ -32,7 +32,10 @@ func TestWriteLog(t *testing.T) {
 	filePath := "./testLog/"
 	fileName := "hello.txt"
 	inputData := "data log here"
-	PrintLog(logger, file, inputData)
+
+	// set input error
+	logger.SetOutput(file)
+	logger.Println(inputData)
 
 	//checking file location
 	_, err := os.Stat(filePath + fileName)
