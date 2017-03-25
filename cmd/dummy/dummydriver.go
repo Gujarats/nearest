@@ -113,7 +113,7 @@ func GenereateDriver(lat, lon float64, sum int) []Driver {
 	var drivers []Driver
 	location.SetupLocation(lat, lon)
 
-	// get 30 % of the sum data
+	// get 50 % of the sum data
 	smallPercentage := (50.0 / 100.0) * float64(sum)
 	percentData := int(smallPercentage)
 
