@@ -2,43 +2,37 @@ package logger
 
 import (
 	"fmt"
+	"log"
 	"os"
 	"testing"
 )
 
+var file *os.File
+var logger *log.Logger
+
 func init() {
-	filePath := "./testLog/"
-	fileName := "hello.txt"
-	prefix := "TEST :: "
-	InitLogger(prefix, filePath, fileName)
-}
-
-func check(t *testing.T, err error) {
+	var err error
+	file, err = createLogFile("./testLog/", "hello.txt")
 	if err != nil {
-		t.Error(err)
+		panic(err)
 	}
-}
-
-func printErrorTest(t *testing.T, actual, expected interface{}) {
-	t.Errorf("Test failed expected : %s, actual : %s", expected, actual)
+	logger = log.New(os.Stderr,
+		"Test Log :: ",
+		log.Ldate|log.Ltime|log.Lshortfile)
 }
 
 // checking if file created is exist
 func TestCreateLogFile(t *testing.T) {
-	_, err := createLogFile("Test :: ", "./testLog/", "hello.txt")
-	check(t, err)
-
 	//checking file location
-	_, err = os.Stat("./testLog/hello.txt")
+	_, err := os.Stat("./testLog/hello.txt")
 	check(t, err)
-
 }
 
 func TestWriteLog(t *testing.T) {
 	filePath := "./testLog/"
 	fileName := "hello.txt"
 	inputData := "data log here"
-	PrintLog(inputData)
+	PrintLog(logger, file, inputData)
 
 	//checking file location
 	_, err := os.Stat(filePath + fileName)
@@ -60,4 +54,18 @@ func TestWriteLog(t *testing.T) {
 	//convert byte to string
 	stringResult := string(result)
 	fmt.Println("Result Read files = ", stringResult)
+}
+
+// ============ PRIVATE FUNCTION ============//
+
+// checking if erro not nil.
+func check(t *testing.T, err error) {
+	if err != nil {
+		t.Error(err)
+	}
+}
+
+//pritnt the error if the result is not equal with the expected result.
+func printErrorTest(t *testing.T, actual, expected interface{}) {
+	t.Errorf("Test failed expected : %s, actual : %s", expected, actual)
 }
