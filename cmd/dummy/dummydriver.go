@@ -1,5 +1,8 @@
 package main
 
+// NOTE :  This file is used for seed the database. Here I'm creating 2500 district or marked location based on one city. from given latitude and longitude.
+// in every district I created 1000 drivers so that user in near district can request a driver.
+
 import (
 	"fmt"
 	"log"
@@ -62,10 +65,9 @@ func insertDummyMarkLocation(cityName string, city *cityModel.City) {
 			log.Panic(err)
 		}
 	}
-
 }
 
-// insert 50.000 drivers. 100 drivers in every district.
+// insert 2.500.000 drivers. 1000 drivers in every district.
 // passed driver struct to save the data to database.
 func insertDummyDriver(cityName string, city *cityModel.City, driverData *driverModel.DriverData) {
 
@@ -77,7 +79,7 @@ func insertDummyDriver(cityName string, city *cityModel.City, driverData *driver
 
 	// create one
 	for _, district := range districts {
-		// generate 100 drivers
+		// generate 1000 drivers
 		fmt.Printf("Generating drivers in distrtic = %+v\n", district)
 		dummyDrivers := GenereateDriver(district.Location.Coordinates[1], district.Location.Coordinates[0], 1000)
 
@@ -86,8 +88,6 @@ func insertDummyDriver(cityName string, city *cityModel.City, driverData *driver
 		collectionsName := cityName + "_district_" + districtId
 
 		for _, driver := range dummyDrivers {
-
-			// print the data
 
 			// create index driver
 			err := driverData.CreateIndex(collectionsName)
@@ -99,17 +99,12 @@ func insertDummyDriver(cityName string, city *cityModel.City, driverData *driver
 	}
 }
 
+// this struct is used for GenereteDriver
 type Driver struct {
 	Name   string  `json:"name"`
 	Lat    float64 `json:"lat"`
 	Lon    float64 `json:"lon"`
 	Status bool    `json:"status"`
-}
-
-type City struct {
-	Name string  `json:"name"`
-	Lat  float64 `json:"lat"`
-	Lon  float64 `json:"lon"`
 }
 
 // Generate dummy drivers this will return []Driver with given sum.
