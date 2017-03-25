@@ -25,7 +25,9 @@ func init() {
 func TestCreateLogFile(t *testing.T) {
 	//checking file location
 	_, err := os.Stat("./testLog/hello.txt")
-	check(t, err)
+	if err != nil {
+		t.Errorf("Expecting the file exist got = %v\n", err)
+	}
 }
 
 func TestWriteLog(t *testing.T) {
@@ -39,16 +41,22 @@ func TestWriteLog(t *testing.T) {
 
 	//checking file location
 	_, err := os.Stat(filePath + fileName)
-	check(t, err)
+	if err != nil {
+		t.Error(err)
+	}
 
 	//opening file
 	f, err := os.OpenFile(filePath+fileName, os.O_RDWR|os.O_CREATE|os.O_APPEND, os.ModePerm)
-	check(t, err)
+	if err != nil {
+		t.Error(err)
+	}
 
 	//get the data from the file
 	result := make([]byte, 100)
 	_, err = f.Read(result)
-	check(t, err)
+	if err != nil {
+		t.Error(err)
+	}
 
 	if len(result) == 0 {
 		t.Error("Log Data is Empty")
@@ -57,18 +65,4 @@ func TestWriteLog(t *testing.T) {
 	//convert byte to string
 	stringResult := string(result)
 	fmt.Println("Result Read files = ", stringResult)
-}
-
-// ============ PRIVATE FUNCTION ============//
-
-// checking if erro not nil.
-func check(t *testing.T, err error) {
-	if err != nil {
-		t.Error(err)
-	}
-}
-
-//pritnt the error if the result is not equal with the expected result.
-func printErrorTest(t *testing.T, actual, expected interface{}) {
-	t.Errorf("Test failed expected : %s, actual : %s", expected, actual)
 }
