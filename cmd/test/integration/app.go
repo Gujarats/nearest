@@ -1,5 +1,7 @@
 package main
 
+// NOTE : This file is used for integration test. Testing the API endpoint and see if the result has no error and behave like expected.
+
 import (
 	"bytes"
 	"encoding/json"
