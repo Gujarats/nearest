@@ -15,15 +15,9 @@ import (
 
 	driverController "github.com/Gujarats/API-Golang/controller/driver"
 
-	"github.com/Gujarats/API-Golang/util/logger"
-
 	mgo "gopkg.in/mgo.v2"
 	redis "gopkg.in/redis.v5"
 )
-
-func init() {
-	logger.InitLogger("App :: ", "./logs/", "App.txt")
-}
 
 func main() {
 	//getting list of all the connection.
