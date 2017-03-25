@@ -69,7 +69,7 @@ func UpdateDriver(driver driverInterface.DriverInterfacce, cityInterface cityInt
 		if err != nil {
 			//return Bad response
 			w.WriteHeader(http.StatusBadRequest)
-			global.SetResponse(w, "Failed", "Parse Boolean Erro")
+			global.SetResponse(w, "Failed", "Parse Boolean Error")
 			return
 		}
 
@@ -88,7 +88,9 @@ func UpdateDriver(driver driverInterface.DriverInterfacce, cityInterface cityInt
 		lastDistrict := driver.GetLastDistrict(id)
 
 		// checks drivers location which district they are now
-		district, err := cityInterface.GetNearestDistrict(city, latFloat, lonFloat, 100)
+		// NOTE : getting the nearest district must not null or fail. so we need to repeat the function if we got null.
+		// but there is one approach solutions we give more distance value so that we can find the district event it is far.
+		district, err := cityInterface.GetNearestDistrict(city, latFloat, lonFloat, 5000)
 		if err != nil {
 			w.WriteHeader(http.StatusInternalServerError)
 			global.SetResponse(w, "Failed", "Failed to get nearest district")
