@@ -48,6 +48,7 @@ func TestCheckfile(t *testing.T) {
 	if err != nil {
 		panic(err)
 	}
+	defer file.Close()
 
 	result := make([]byte, 100)
 	file.Read(result)
