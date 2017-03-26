@@ -1,6 +1,7 @@
 package logger
 
 import (
+	"fmt"
 	"log"
 	"os"
 	"testing"
@@ -16,15 +17,16 @@ func init() {
 	logger = log.New(os.Stderr,
 		"Test Log :: ",
 		log.Ldate|log.Ltime|log.Lshortfile)
-}
 
-// checking if file created is exist
-func TestCreateLogFile(t *testing.T) {
-	//checking file location
+	// remove the file first if exist
 	_, err := os.Stat(filePath + fileName)
 	if err != nil {
-		t.Errorf("Expecting the file exist got = %v\n", err)
+		// file is not exist, then continue to the test
+		return
 	}
+
+	os.Remove(filePath + fileName)
+
 }
 
 func TestWriteLog(t *testing.T) {
@@ -39,4 +41,16 @@ func TestWriteLog(t *testing.T) {
 
 	logger.SetOutput(file)
 	logger.Println(inputData)
+}
+
+func TestCheckfile(t *testing.T) {
+	file, err := os.OpenFile(filePath+fileName, os.O_RDWR, os.ModePerm)
+	if err != nil {
+		panic(err)
+	}
+
+	result := make([]byte, 100)
+	file.Read(result)
+
+	fmt.Println(result)
 }
