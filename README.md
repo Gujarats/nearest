@@ -18,11 +18,11 @@ No-SQL is very easy to modify whenever it comes to change or add the field of an
 # How to run this ?
 
 If you are don't want to install all the databases and the dependencies. Then [docker-compose](https://docs.docker.com/compose/install/) is your answer, please install it first.
-and then clonse this [docker-composer](https://github.com/Gujarats/Go-docker) project.
+and then clonse my [compose file](https://github.com/Gujarats/Go-docker) project.
 
 After that `cd Go-docker` inside the Go-docker folder clone this project 
 ```shell
-$ git clone https://github.com/Gujarats/API-Golang/tree/master 
+$ git clone https://github.com/Gujarats/API-Golang
 ```
 
 Now after all the project are cloned. the only thing you have to do to run this project is run the docker-compose command in Go-docker folder :
