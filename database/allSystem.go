@@ -22,7 +22,7 @@ func SystemConnection() map[string]interface{} {
 	var err error
 	// create redis connection
 	redisConn := RedisHost{
-		Address:  "localhost:6379",
+		Address:  "redis:6379",
 		Password: "",
 		DB:       0,
 	}
@@ -32,26 +32,14 @@ func SystemConnection() map[string]interface{} {
 		panic(err)
 	}
 
-	// create postgre connection
-	postgreConn := PostgreHost{
-		Driver:   "postgres",
-		Database: "postgres",
-		Username: "postgres",
-		Ssl:      "disable",
-		Password: "root",
-	}
-
-	postgreConnection := GetPostgreDb(&postgreConn)
-
 	//create mongodb connection
 	mongo := MongoHost{
-		Host: "127.0.0.1",
+		Host: "db",
 		Port: "27017",
 	}
 	mongoConnection := mongo.Connect()
 
 	listConnection["redis"] = redisConnection
-	listConnection["postgre"] = postgreConnection
 	listConnection["mongodb"] = mongoConnection
 	return listConnection
 }
