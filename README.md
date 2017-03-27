@@ -13,7 +13,33 @@ So if we created save those drivers in one table it is going to be a nightmare i
 
 * Go
 
-No-SQL is very easy to modify whenever it comes to change or add the field of an object stored in the collections. And we can easily create another collections to make new documents to strore the new object. this flexible database is well suited for storing the location and drivers in the city. Because the collections and the data may varies in every each city. It is my personal opinion if you have yours and better in performance then I would love to hear.
+No-SQL is very easy to modify whenever it comes to change or add the field of an object stored in the collections. And we can easily create another collections to make new documents to strore the new object. this flexible database is well suited for storing the location and drivers in the city. Because the collections and the data may varies in every each city. It is my personal opinion if you have yours and better on performance then I would love to hear it.
+
+# How to run this ?
+
+If you are don't want to install all the databases and the dependencies. Then [docker-compose](https://docs.docker.com/compose/install/) is your answer, please install it first.
+and then clonse this [docker-composer](https://github.com/Gujarats/Go-docker) project.
+
+After that `cd Go-docker` inside the Go-docker folder clone this project 
+```shell
+$ git clone https://github.com/Gujarats/API-Golang/tree/master 
+```
+
+Now after all the project are cloned. the only thing you have to do to run this project is run the docker-compose command in Go-docker folder :
+```shell
+$ docker-compose up
+```
+Now you can see the project running on your machine. If you choose to not use docker-compose then you can install all the databases and dependencies all manually.
+
+## Seed Database
+Now if you have done install all Tech stack then you have to seed the database in this case in mongodb, since you have empty data in it.
+It is very simple just follow this steps :
+```shell
+$ cd API-Golang/cmd/dummy
+$ go build
+$ ./dummy
+```
+Now all the data is seeded please wait for couple of minutes :D. After all done you can test the API and see the data collection in mongodb.
 
 ## Data structure
 So I created some mark in the city, and saved those mark in the database. I use no-SQL to achieve this. These mark maybe varies in every city, but in this simple project I mark the city for about `2500` location and it is generated from the algorithm in the `cmd/dummy`.
