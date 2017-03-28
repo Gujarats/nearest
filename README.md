@@ -49,7 +49,10 @@ $ docker exec -it YOUR_ID_CONTAINER bash
 And then run the binary file using `./dummy` command. Please Note that if this doesn't work please try to `go build` first.
 
 ## Data structure
-So I created some mark in the city, and saved those mark in the database. I use no-SQL to achieve this. These mark maybe varies in every city, but in this simple project I mark the city for about `2500` location and it is generated from the algorithm in the `cmd/dummy`.
+So I created some mark in the city, and saved those mark in the database. I use no-SQL to achieve this. These mark maybe varies in every city, but in this simple project I mark the city for about `2500` location and it is generated from the algorithm in the `cmd/dummy`. You can find more detail about this seed algorithm from here :
+```shell
+[GenerateLocation](https://github.com/Gujarats/GenerateLocation)
+```
 
 The marking location algorithm is simple. Get based latitude and longitude from the edge of the city, in this case west and north. And then genereate a mark location from that base location to the east and south, those location will be separate from given distance.
 
