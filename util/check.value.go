@@ -2,6 +2,7 @@ package util
 
 import "reflect"
 
+// Check if all input values in not nil.
 func CheckValue(values ...string) bool {
 	for _, value := range values {
 		if value == "" {
@@ -12,8 +13,8 @@ func CheckValue(values ...string) bool {
 	return true
 }
 
-// passing struct and check all the attribute
-// false if there is empty value
+// passing struct and check all the attribute,
+// false if there is empty value.
 func CheckAttribute(input interface{}) bool {
 	object := reflect.ValueOf(input)
 
@@ -27,6 +28,7 @@ func CheckAttribute(input interface{}) bool {
 	return true
 }
 
+// compare the object value to non assign value.
 func IsZeroOfUnderlyingType(objectValue interface{}) bool {
 	return reflect.DeepEqual(objectValue, reflect.Zero(reflect.TypeOf(objectValue)).Interface())
 }
