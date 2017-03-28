@@ -40,12 +40,13 @@ $ go build
 $ ./dummy
 ```
 Now all the data is seeded please wait for couple of minutes :D. After all done you can test the API and see the data collection in mongodb.
+NOTE : You have to change the host name in the `database/allSystem.go` and change the host your local. in this case I'm using a host for docker-compose setup.
 ### Using Docker
 If you're using docker to run this project then you need to go to bash in the running docker
 ```shell
 $ docker exec -it YOUR_ID_CONTAINER bash
 ```
-And then run the binary file using `./dummy`.
+And then run the binary file using `./dummy` command. Please Note that if this doesn't work please try to `go build` first.
 
 ## Data structure
 So I created some mark in the city, and saved those mark in the database. I use no-SQL to achieve this. These mark maybe varies in every city, but in this simple project I mark the city for about `2500` location and it is generated from the algorithm in the `cmd/dummy`.
@@ -102,9 +103,29 @@ Indexing is the important part here in order to gain speed for read performance.
 ### configuration 
 Go to `database` folder and config the host and port for `mongodb` and `redis`. As default it is run on default configuration for localhost. You can change it on these file : 
 
-* mongodb.go 
+* allSystem.go
 
-* redis.go
+```go
+ .....
+	// create redis connection
+	redisConn := RedisHost{
+		Address:  "redis:6379", // change the host your setup
+		Password: "",
+		DB:       0,
+	}
+
+	redisConnection, err := redisConn.Connect()
+	if err != nil {
+		panic(err)
+	}
+
+	//create mongodb connection
+	mongo := MongoHost{
+		Host: "db", // change the host your setup
+		Port: "27017",
+	}
+ ......
+```
 
 <b>This is really important</b>
 After all database connections are set. The database should be seeded using dummy datas to mongodb.
@@ -148,9 +169,9 @@ for find API
 ```shell
 $ echo "GET http://localhost:8080/driver/find?&city=Bandung&latitude=-6.978690151910177&longitude=108.12333333333333&distance=100" | vegeta attack -duration=60s -rate=50 | tee results_find_driver.bin | vegeta report
 ```
-From above two commands I careated 50 request per second in 60 second.
+From above two commands I careated 50 request per second in 60 seconds.
 ![result_load_testing_from_local](https://github.com/Gujarats/API-Golang/blob/master/result_pike_local.png)
 
 
-
-
+## Contribution
+If find this project interesting I'm open for improvement and please create an issue or question to discuss it further.
