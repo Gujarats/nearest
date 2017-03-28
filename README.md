@@ -40,6 +40,12 @@ $ go build
 $ ./dummy
 ```
 Now all the data is seeded please wait for couple of minutes :D. After all done you can test the API and see the data collection in mongodb.
+### Using Docker
+If you're using docker to run this project then you need to go to bash in the running docker
+```shell
+$ docker exec -it YOUR_ID_CONTAINER bash
+```
+And then run the binary file using `./dummy`.
 
 ## Data structure
 So I created some mark in the city, and saved those mark in the database. I use no-SQL to achieve this. These mark maybe varies in every city, but in this simple project I mark the city for about `2500` location and it is generated from the algorithm in the `cmd/dummy`.
