@@ -26,9 +26,51 @@ func main() {
 	loadTests := model.GetAllLoadTest(mongo, "loadTest1")
 	uniqueDatas := findUniqueData(loadTests)
 
+	fmt.Println("===========Data============")
 	fmt.Println("unique Data count = ", len(uniqueDatas))
 	fmt.Println("max duplicate = ", maxDuplicatData(uniqueDatas, loadTests))
 	fmt.Println("min duplicate = ", minDuplicateData(uniqueDatas, loadTests))
+
+	fmt.Println("===========Latency============")
+	fmt.Println("min latency= ", minLatency(loadTests))
+	fmt.Println("max latency= ", maxLatency(loadTests))
+	fmt.Println("average latency= ", averageLatency(loadTests))
+
+}
+
+func averageLatency(loadTests []LoadTest) float64 {
+	var total float64
+	count := float64(len(loadTests))
+	for _, loadTest := range loadTests {
+		total += loadTest.Latency
+	}
+
+	return total / count
+
+}
+
+func minLatency(loadTests []LoadTest) float64 {
+	min := 100000.0
+	for _, loadTest := range loadTests {
+		if min > loadTest.Latency {
+			min = loadTest.Latency
+		}
+	}
+
+	return min
+
+}
+
+func maxLatency(loadTests []LoadTest) float64 {
+	max := 0.0
+	for _, loadTest := range loadTests {
+		if max < loadTest.Latency {
+			max = loadTest.Latency
+		}
+	}
+
+	return max
+
 }
 
 func findUniqueData(loadTests []LoadTest) []LoadTest {
