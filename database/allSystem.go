@@ -3,6 +3,8 @@ package database
 import (
 	"log"
 	"os"
+
+	mgo "gopkg.in/mgo.v2"
 )
 
 // this file is used for combining all the connection from different database system.
@@ -12,7 +14,7 @@ var logger *log.Logger
 
 func init() {
 	logger = log.New(os.Stderr,
-		"Controller Driver :: ",
+		"Database :: ",
 		log.Ldate|log.Ltime|log.Lshortfile)
 }
 
@@ -42,4 +44,15 @@ func SystemConnection() map[string]interface{} {
 	listConnection["redis"] = redisConnection
 	listConnection["mongodb"] = mongoConnection
 	return listConnection
+}
+
+func GetMongo() *mgo.Session {
+	//create mongodb connection
+	mongo := MongoHost{
+		Host: "localhost",
+		Port: "27017",
+	}
+	mongoConnection := mongo.Connect()
+
+	return mongoConnection
 }
