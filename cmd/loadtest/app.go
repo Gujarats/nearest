@@ -46,7 +46,23 @@ func main() {
 	//genLocation := genChanLocation(locations)
 
 	// send the request
-	createRequestConcurrently2(DB, locations)
+	createRequestConcurrently(DB, locations)
+	//createRequestSequence(DB, locations)
+}
+
+func createRequestSequence(DB *mgo.Session, locations []location.Location) {
+
+	for _, location := range locations {
+		lat := strconv.FormatFloat(location.Lat, 'f', -1, 64)
+		lon := strconv.FormatFloat(location.Lon, 'f', -1, 64)
+		loadTest := findRequest("Bandung", lat, lon, "500")
+		err := InsertLoadTest(DB, "loadTest1", loadTest)
+		if err != nil {
+			fmt.Println("Insert Data Error")
+		}
+
+	}
+
 }
 
 func genChanLocation(locations []location.Location) <-chan location.Location {
@@ -64,7 +80,7 @@ func genChanLocation(locations []location.Location) <-chan location.Location {
 	return result
 }
 
-func createRequestConcurrently2(DB *mgo.Session, locations []location.Location) {
+func createRequestConcurrently(DB *mgo.Session, locations []location.Location) {
 	var wg sync.WaitGroup
 
 	for _, location := range locations {
@@ -74,7 +90,7 @@ func createRequestConcurrently2(DB *mgo.Session, locations []location.Location) 
 			lat := strconv.FormatFloat(location.Lat, 'f', -1, 64)
 			lon := strconv.FormatFloat(location.Lon, 'f', -1, 64)
 			loadTest := findRequest("Bandung", lat, lon, "500")
-			err := insertLoadTest(DB, "loadTest1", loadTest)
+			err := InsertLoadTest(DB, "loadTest1", loadTest)
 			if err != nil {
 				fmt.Println("Insert Data Error")
 			}
@@ -146,7 +162,7 @@ func findRequest(city, lat, lon, distance string) LoadTest {
 }
 
 // Save the result to database
-func insertLoadTest(mongo *mgo.Session, collectionName string, loadTest LoadTest) error {
+func InsertLoadTest(mongo *mgo.Session, collectionName string, loadTest LoadTest) error {
 	collection := mongo.DB("LoadTest").C(collectionName)
 	err := collection.Insert(loadTest)
 	if err != nil {
