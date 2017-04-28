@@ -15,13 +15,12 @@ var logger *log.Logger
 
 func init() {
 	logger = log.New(os.Stderr,
-		"Driver Model :: ",
+		"CLI :: ",
 		log.Ldate|log.Ltime|log.Lshortfile)
 }
 
 func main() {
-	listConnection := database.SystemConnection()
-	mongo = listConnection["mongodb"].(*mgo.Session)
+	mongo := database.GetMongo()
 	model := LoadTest{}
 	loadTests := model.GetAllLoadTest(mongo, "loadTest1")
 	uniqueDatas := findUniqueData(loadTests)
