@@ -27,8 +27,7 @@ type LoadTest struct {
 
 func main() {
 	// get mongoDB connection
-	listConnection := database.SystemConnection()
-	DB := listConnection["mongodb"].(*mgo.Session)
+	DB := database.GetMongo()
 
 	// base location
 	lat := -6.8647721
