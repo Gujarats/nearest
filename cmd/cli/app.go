@@ -6,6 +6,7 @@ import (
 	"os"
 
 	"github.com/Gujarats/API-Golang/database"
+	"github.com/urfave/cli"
 	mgo "gopkg.in/mgo.v2"
 )
 
@@ -21,19 +22,55 @@ func init() {
 
 func main() {
 	mongo := database.GetMongo()
-	model := LoadTest{}
-	loadTests := model.GetAllLoadTest(mongo, "loadTest1")
-	uniqueDatas := findUniqueData(loadTests)
 
-	fmt.Println("===========Data============")
-	fmt.Println("unique Data count = ", len(uniqueDatas))
-	fmt.Println("max duplicate = ", maxDuplicatData(uniqueDatas, loadTests))
-	fmt.Println("min duplicate = ", minDuplicateData(uniqueDatas, loadTests))
+	app := cli.NewApp()
+	app.Name = "MyCli"
+	app.Usage = "To check and test load testing result"
+	app.Version = "1.0.0"
+	app.Commands = []cli.Command{
+		//first command load result test
+		{
+			Name:    "load",
+			Aliases: []string{"l"},
+			Usage:   "Show load result",
+			Action: func(c *cli.Context) error {
+				model := LoadTest{}
+				loadTests := model.GetAllLoadTest(mongo, "loadTest1")
+				uniqueDatas := findUniqueData(loadTests)
 
-	fmt.Println("===========Latency============")
-	fmt.Println("min latency= ", minLatency(loadTests))
-	fmt.Println("max latency= ", maxLatency(loadTests))
-	fmt.Println("average latency= ", averageLatency(loadTests))
+				fmt.Println("===========Data============")
+				fmt.Println("unique Data count = ", len(uniqueDatas))
+				fmt.Println("max duplicate = ", maxDuplicatData(uniqueDatas, loadTests))
+				fmt.Println("min duplicate = ", minDuplicateData(uniqueDatas, loadTests))
+
+				fmt.Println("===========Latency============")
+				fmt.Println("min latency= ", minLatency(loadTests))
+				fmt.Println("max latency= ", maxLatency(loadTests))
+				fmt.Println("average latency= ", averageLatency(loadTests))
+				return nil
+			},
+		},
+
+		// drop databse
+		{
+			Name:    "drop",
+			Aliases: []string{"d"},
+			Usage:   "Drop database",
+			Action: func(c *cli.Context) error {
+
+				err := mongo.DB("LoadTest").DropDatabase()
+				if err != nil {
+					fmt.Println("Error = ", err)
+				}
+
+				fmt.Println("Succes drop database")
+
+				return nil
+			},
+		},
+	}
+
+	app.Run(os.Args)
 
 }
 
