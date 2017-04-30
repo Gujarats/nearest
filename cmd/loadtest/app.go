@@ -37,9 +37,9 @@ func main() {
 	// so it will be (50/5)^2 = 2500 district
 	locations := location.GenerateLocation(lat, lon, 2, 40)
 	fmt.Println("length ", len(locations))
-	for _, location := range locations {
-		fmt.Printf("location  :: %+v\n", location)
-	}
+	//for _, location := range locations {
+	//	fmt.Printf("location  :: %+v\n", location)
+	//}
 
 	// create channel to receive the locations
 	//genLocation := genChanLocation(locations)
@@ -139,21 +139,24 @@ func findRequest(city, lat, lon, distance string) LoadTest {
 	}
 
 	// first we convert interface to a map so we can get the data from gloalResponse
-	data := globalResponse.Data.(map[string]interface{})
-	//fmt.Printf("result = %+v\n", data)
+	if globalResponse.Data != nil {
+		data := globalResponse.Data.(map[string]interface{})
+		//fmt.Printf("result = %+v\n", data)
 
-	// get latency to struct
-	loadTest.Latency = globalResponse.Latency
-	loadTest.Message = globalResponse.Message
+		// get latency to struct
+		loadTest.Latency = globalResponse.Latency
+		loadTest.Message = globalResponse.Message
 
-	driverName := data["name"]
-	if driverName != nil {
-		loadTest.DriverName = driverName.(string)
-	}
+		driverName := data["name"]
+		if driverName != nil {
+			loadTest.DriverName = driverName.(string)
+		}
 
-	id := data["id"]
-	if driverName != nil {
-		loadTest.DriverId = id.(string)
+		id := data["id"]
+		if driverName != nil {
+			loadTest.DriverId = id.(string)
+		}
+
 	}
 
 	return loadTest
