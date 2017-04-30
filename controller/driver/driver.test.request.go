@@ -7,6 +7,7 @@ import (
 	"net/http/httptest"
 	"net/url"
 	"strconv"
+	"sync"
 
 	"github.com/Gujarats/API-Golang/model/global"
 
@@ -40,9 +41,10 @@ func createFindDriverRequest(cityMock *cityMock.CityMock, driverMock *driverMock
 	// city mock model
 	var city cityInterface.CityInterfacce
 	city = cityMock
+	m := &sync.Mutex{}
 
 	// craete request
-	handler := FindDriver(driver, city)
+	handler := FindDriver(m, driver, city)
 	handler.ServeHTTP(w, req)
 
 	// check the response
@@ -87,9 +89,10 @@ func createUpdateDriverRequest(cityMock *cityMock.CityMock, driverMock *driverMo
 	//  city mock model
 	var city cityInterface.CityInterfacce
 	city = cityMock
+	m := &sync.Mutex{}
 
 	// call request to get status response
-	handler := UpdateDriver(driver, city)
+	handler := UpdateDriver(m, driver, city)
 	handler.ServeHTTP(w, req)
 
 	// check the response

@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"os"
 	"strconv"
+	"sync"
 	"time"
 
 	"gopkg.in/mgo.v2/bson"
@@ -31,7 +32,7 @@ func init() {
 
 // find specific driver with their ID or name.
 // if the desired data didn't exist then insert new data
-func UpdateDriver(driver driverInterface.DriverInterfacce, cityInterface cityInterface.CityInterfacce) http.Handler {
+func UpdateDriver(m *sync.Mutex, driver driverInterface.DriverInterfacce, cityInterface cityInterface.CityInterfacce) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		//start time for lenght of the process
 		startTimer := time.Now()
@@ -135,8 +136,12 @@ func UpdateDriver(driver driverInterface.DriverInterfacce, cityInterface cityInt
 
 }
 
-func FindDriver(driver driverInterface.DriverInterfacce, cityInterface cityInterface.CityInterfacce) http.Handler {
+func FindDriver(m *sync.Mutex, driver driverInterface.DriverInterfacce, cityInterface cityInterface.CityInterfacce) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+
+		m.Lock()
+		defer m.Unlock()
+
 		//start time for lenght of the process
 		startTimer := time.Now()
 
