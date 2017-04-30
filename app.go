@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"sync"
 
 	"github.com/Gujarats/API-Golang/database"
 
@@ -42,10 +43,11 @@ func main() {
 	// pass database connections to model
 	driver.GetConn(mongoConn, redisConn)
 	city.GetConn(mongoConn, redisConn)
+	m := &sync.Mutex{}
 
 	// driver router
-	http.Handle("/driver/find", driverController.FindDriver(driver, city))
-	http.Handle("/driver/update", driverController.UpdateDriver(driver, city))
+	http.Handle("/driver/find", driverController.FindDriver(m, driver, city))
+	http.Handle("/driver/update", driverController.UpdateDriver(m, driver, city))
 
 	port := ":8080"
 	fmt.Println("App Started on port = ", port)
