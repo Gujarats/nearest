@@ -46,30 +46,45 @@ func main() {
 
 // insert dummy location from latitude and longitude.
 func insertDummyMarkLocation(cityName string, city *cityModel.City) {
-	// some location in Bandung
+	var cities []cityModel.City
+	// some location in Bandung that will be the top left corner base location.
 	lat := -6.8647721
 	lon := 107.553501
 	var locations []location.Location
 
 	// geneerate location with distance 1 km in every point and limit lenght 50 km.
 	// so it will be (50/1)^2 = 2500 district
-	locations = location.GenerateLocation(lat, lon, 1, 50)
+	locations = location.GenerateLocation(lat, lon, 0.5, 15.0)
 
 	err := city.CreateIndex(cityName)
 	if err != nil {
 		log.Panic(err)
 	}
 	for index, resultLocation := range locations {
-		err := city.InsertDistrict(cityName, index, resultLocation.Lat, resultLocation.Lon)
-		if err != nil {
-			log.Panic(err)
+		//err := city.InsertDistrict(cityName, index, resultLocation.Lat, resultLocation.Lon)
+		//if err != nil {
+		//	log.Panic(err)
+		//}
+		cityData := cityModel.City{
+			Name:     cityName,
+			District: index,
+			Location: cityModel.GeoJson{Type: "Point", Coordinates: []float64{resultLocation.Lon, resultLocation.Lat}},
 		}
+
+		cities = append(cities, cityData)
+	}
+
+	err = city.InsertDistrictBulk(cityName, cities)
+	if err != nil {
+		log.Panic(err)
 	}
 }
 
 // insert 2.500.000 drivers. 1000 drivers in every district.
 // passed driver struct to save the data to database.
 func insertDummyDriver(cityName string, city *cityModel.City, driverData *driverModel.DriverData) {
+
+	var drivers []driverModel.DriverData
 
 	// getting all district from a city
 	districts, err := city.AllDistrict(cityName)
@@ -89,13 +104,26 @@ func insertDummyDriver(cityName string, city *cityModel.City, driverData *driver
 
 		for _, driver := range dummyDrivers {
 
-			// create index driver
-			err := driverData.CreateIndex(collectionsName)
-			if err != nil {
-				log.Panic(err)
+			driverStruct := driverModel.DriverData{
+				Name:     driver.Name,
+				Status:   driver.Status,
+				Location: driverModel.GeoJson{Type: "Point", Coordinates: []float64{driver.Lon, driver.Lat}},
 			}
-			driverData.Insert(collectionsName, driver.Name, driver.Lat, driver.Lon, driver.Status)
+
+			// append driverStruct to drivers to bulk data
+			drivers = append(drivers, driverStruct)
+
+			// create index driver
+			//driverData.Insert(collectionsName, driver.Name, driver.Lat, driver.Lon, driver.Status)
 		}
+
+		err := driverData.CreateIndex(collectionsName)
+		if err != nil {
+			log.Panic(err)
+		}
+
+		driverData.InsertBulk(collectionsName, drivers)
+		drivers = nil
 	}
 }
 
