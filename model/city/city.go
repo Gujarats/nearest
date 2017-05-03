@@ -93,6 +93,29 @@ func (c *City) InsertDistrict(city string, distric int, lat, lon float64) error 
 	return nil
 }
 
+func (c *City) InsertDistrictBulk(cityName string, cities []City) error {
+	var err error
+	err = checkMongoConnection(mongo)
+	if err != nil {
+		return err
+	}
+
+	collection := mongo.DB("Driver").C(cityName)
+
+	bulk := collection.Bulk()
+	for _, city := range cities {
+		bulk.Insert(city)
+	}
+
+	_, err = bulk.Run()
+	if err != nil {
+		return err
+	}
+
+	return nil
+
+}
+
 func (c *City) AllDistrict(city string) ([]City, error) {
 	var cities []City
 	var err error

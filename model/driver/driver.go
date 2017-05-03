@@ -187,6 +187,21 @@ func (d *DriverData) Insert(collectionName string, name string, lat, lon float64
 
 }
 
+func (d *DriverData) InsertBulk(collectionName string, drivers []DriverData) error {
+	collection := mongo.DB("Driver").C(collectionName)
+	bulk := collection.Bulk()
+	for _, driver := range drivers {
+		bulk.Insert(driver)
+	}
+
+	_, err := bulk.Run()
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
 // create index for location and status for speed read query.
 func (d *DriverData) CreateIndex(collectionName string) error {
 
