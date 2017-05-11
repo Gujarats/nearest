@@ -14,7 +14,8 @@ import (
 
 	"github.com/Gujarats/API-Golang/database"
 	"github.com/Gujarats/API-Golang/model/global"
-	location "github.com/Gujarats/GenerateLocation"
+
+	location "gopkg.in/gujarats/GenerateLocation.v1"
 )
 
 type LoadTest struct {
@@ -35,7 +36,8 @@ func main() {
 
 	// geneerate location with distance 1 km in every point and limit lenght 50 km.
 	// so it will be (50/5)^2 = 2500 district
-	locations := location.GenerateLocation(lat, lon, 2, 40)
+	loc := location.New(lat, lon)
+	locations := loc.GenerateLocation(0.1, 50)
 	fmt.Println("length ", len(locations))
 	//for _, location := range locations {
 	//	fmt.Printf("location  :: %+v\n", location)
