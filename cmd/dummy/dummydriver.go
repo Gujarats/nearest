@@ -39,9 +39,18 @@ func main() {
 	city := &cityModel.City{}
 	city.GetConn(mongoConn, redisConn)
 
+	// read config file
+	config, err := ReadConfigJson("config.json")
+	if err != nil {
+		log.Panic(err)
+		return
+	}
+
+	fmt.Printf("config = %+v\n", config)
+
 	// inserting city district
 	fmt.Println("Please wait generating locations")
-	insertDummyMarkLocation(cityName, city)
+	insertDummyMarkLocation(config, cityName, city)
 
 	// inserting dummy driver
 	fmt.Println("Please wait generating drivers")
@@ -49,19 +58,16 @@ func main() {
 }
 
 // insert dummy location from latitude and longitude.
-func insertDummyMarkLocation(cityName string, city *cityModel.City) {
+func insertDummyMarkLocation(config ConfigLocation, cityName string, city *cityModel.City) {
 	var cities []cityModel.City
-	// some location in Bandung that will be the top left corner base location.
-	lat := -6.8647721
-	lon := 107.553501
 
-	loc := location.New(lat, lon)
-	var locations []location.Location
+	loc := location.New(config.Lat, config.Lon)
 
-	// geneerate location with distance 1 km in every point and limit lenght 50 km.
-	// so it will be (15.0/0.5)^2 = 900 district
-	locations = loc.GenerateLocation(0.5, 15.0)
-	mapCenterLocations, err := loc.GetCenterQuadranLocations(0.5, 15.0, 3)
+	// Generate locations
+	locations := loc.GenerateLocation(config.Distance, config.LimitLength)
+
+	// Get marked center location from its quadran
+	mapCenterLocations, err := loc.GetCenterQuadranLocations(config.Distance, config.LimitLength, config.Level)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -86,8 +92,24 @@ func insertDummyMarkLocation(cityName string, city *cityModel.City) {
 	for index, city := range cities {
 		datas[index] = city
 	}
-
 	err = city.InsertLocationsBulk(cityName, datas)
+	if err != nil {
+		log.Panic(err)
+	}
+
+	// insert all markedCenterLocations
+	datas = make([]interface{}, len(mapCenterLocations))
+	for index, mapCenterLocation := range mapCenterLocations {
+		object := struct {
+			Level     int
+			Locations [4]location.CenterLocation
+		}{
+			Level:     index,
+			Locations: mapCenterLocation,
+		}
+		datas[index] = object
+	}
+	err = city.InsertLocationsBulk("BandungMarkedCenter", datas)
 	if err != nil {
 		log.Panic(err)
 	}
