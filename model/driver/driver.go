@@ -187,12 +187,10 @@ func (d *DriverData) Insert(collectionName string, name string, lat, lon float64
 
 }
 
-func (d *DriverData) InsertBulk(collectionName string, drivers []DriverData) error {
+func (d *DriverData) InsertBulk(collectionName string, drivers []interface{}) error {
 	collection := mongo.DB("Driver").C(collectionName)
 	bulk := collection.Bulk()
-	for _, driver := range drivers {
-		bulk.Insert(driver)
-	}
+	bulk.Insert(drivers...)
 
 	_, err := bulk.Run()
 	if err != nil {
