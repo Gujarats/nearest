@@ -6,10 +6,12 @@ package main
 import (
 	"fmt"
 	"log"
+	"strconv"
+	"sync"
 
 	// fake data library
-	"github.com/Gujarats/GenerateLocation"
-	"github.com/icrowley/fake"
+
+	location "gopkg.in/gujarats/GenerateLocation.v1"
 
 	mgo "gopkg.in/mgo.v2"
 	redis "gopkg.in/redis.v5"
@@ -38,10 +40,12 @@ func main() {
 	city.GetConn(mongoConn, redisConn)
 
 	// inserting city district
+	fmt.Println("Please wait generating locations")
 	insertDummyMarkLocation(cityName, city)
 
 	// inserting dummy driver
-	insertDummyDriver(cityName, city, driverData)
+	fmt.Println("Please wait generating drivers")
+	insertDummyDriver(mongoConn, cityName, city, driverData)
 }
 
 // insert dummy location from latitude and longitude.
@@ -50,21 +54,24 @@ func insertDummyMarkLocation(cityName string, city *cityModel.City) {
 	// some location in Bandung that will be the top left corner base location.
 	lat := -6.8647721
 	lon := 107.553501
+
+	loc := location.New(lat, lon)
 	var locations []location.Location
 
 	// geneerate location with distance 1 km in every point and limit lenght 50 km.
-	// so it will be (50/1)^2 = 2500 district
-	locations = location.GenerateLocation(lat, lon, 0.5, 15.0)
+	// so it will be (15.0/0.5)^2 = 900 district
+	locations = loc.GenerateLocation(0.5, 15.0)
+	mapCenterLocations, err := loc.GetCenterQuadranLocations(0.5, 15.0, 3)
+	if err != nil {
+		log.Fatal(err)
+	}
 
-	err := city.CreateIndex(cityName)
+	err = city.CreateIndex(cityName)
 	if err != nil {
 		log.Panic(err)
 	}
+
 	for index, resultLocation := range locations {
-		//err := city.InsertDistrict(cityName, index, resultLocation.Lat, resultLocation.Lon)
-		//if err != nil {
-		//	log.Panic(err)
-		//}
 		cityData := cityModel.City{
 			Name:     cityName,
 			District: index,
@@ -74,34 +81,97 @@ func insertDummyMarkLocation(cityName string, city *cityModel.City) {
 		cities = append(cities, cityData)
 	}
 
-	err = city.InsertDistrictBulk(cityName, cities)
+	// insertt all district to one collections
+	datas := make([]interface{}, len(cities))
+	for index, city := range cities {
+		datas[index] = city
+	}
+
+	err = city.InsertLocationsBulk(cityName, datas)
 	if err != nil {
 		log.Panic(err)
+	}
+
+	// insert district with its quadran position
+	insertLocationToItsQuadran(city, mapCenterLocations, locations)
+}
+
+// this function will insert the input locations to its quadran.
+// NOTE : every quadran will have a duplicate or the same locations.
+// because I split them using to 4 pieces like I,II,III,IV in quadran.
+func insertLocationToItsQuadran(city *cityModel.City, mapCenterLocations map[int][4]location.CenterLocation, locations []location.Location) {
+	// iterate map that holds key as level and centerLocations as value
+	for level, centerLocations := range mapCenterLocations {
+		// create map that will hold all location to their quadran level
+		mapLocations := make(map[string][]interface{})
+
+		// center locations from the map.
+		for _, centerLocation := range centerLocations {
+			baseLocation := location.Location{
+				Lat: centerLocation.MarkedLocation.Lat,
+				Lon: centerLocation.MarkedLocation.Lon,
+			}
+
+			// iterate all locations which is input location to inserted to its quadran level.
+			for _, inputLocation := range locations {
+				quadran, err := location.GetQuadranPosition(baseLocation, inputLocation)
+				if err != nil {
+					log.Fatal(err)
+				}
+
+				// store inputLocations to its quadran and level collections on map
+				storeLocation := struct{ Location cityModel.GeoJson }{
+					Location: cityModel.GeoJson{Type: "Point", Coordinates: []float64{inputLocation.Lon, inputLocation.Lat}},
+				}
+				collectionName := "level_" + strconv.Itoa(level) + quadran
+				mapLocations[collectionName] = append(mapLocations[collectionName], storeLocation)
+			}
+
+		}
+
+		// after all locations has stored to the map, we store them into mongodb
+		var wg sync.WaitGroup
+		for collectionName, datas := range mapLocations {
+			wg.Add(1)
+			go func(city *cityModel.City, collectionName string, datas []interface{}) {
+				err := city.CreateIndex(collectionName)
+				if err != nil {
+					log.Panic(err)
+				}
+
+				err = city.InsertLocationsBulk(collectionName, datas)
+				if err != nil {
+					log.Fatal(err)
+				}
+				wg.Done()
+			}(city, collectionName, datas)
+
+		}
+		wg.Wait()
 	}
 }
 
 // insert 2.500.000 drivers. 1000 drivers in every district.
 // passed driver struct to save the data to database.
-func insertDummyDriver(cityName string, city *cityModel.City, driverData *driverModel.DriverData) {
-
-	var drivers []driverModel.DriverData
-
+func insertDummyDriver(mongoConn *mgo.Session, cityName string, city *cityModel.City, driverData *driverModel.DriverData) {
 	// getting all district from a city
 	districts, err := city.AllDistrict(cityName)
 	if err != nil {
 		log.Panic(err)
 	}
 
-	// create one
+	var wg sync.WaitGroup
+	fmt.Println("length dristricts = ", len(districts))
 	for _, district := range districts {
-		// generate 1000 drivers
-		fmt.Printf("Generating drivers in distrtic = %+v\n", district)
-		dummyDrivers := GenereateDriver(district.Location.Coordinates[1], district.Location.Coordinates[0], 1000)
-
 		//create collectionName for using the format: cityName_district_DistrictId
 		districtId := district.Id.Hex()
-		collectionsName := cityName + "_district_" + districtId
+		collectionName := cityName + "_district_" + districtId
 
+		// for storing generated drivers
+		var drivers []interface{}
+
+		// generate 1000 drivers
+		dummyDrivers := GenereateDriver(district.Location.Coordinates[1], district.Location.Coordinates[0], 1000)
 		for _, driver := range dummyDrivers {
 
 			driverStruct := driverModel.DriverData{
@@ -113,21 +183,31 @@ func insertDummyDriver(cityName string, city *cityModel.City, driverData *driver
 			// append driverStruct to drivers to bulk data
 			drivers = append(drivers, driverStruct)
 
-			// create index driver
-			//driverData.Insert(collectionsName, driver.Name, driver.Lat, driver.Lon, driver.Status)
 		}
 
-		err := driverData.CreateIndex(collectionsName)
-		if err != nil {
-			log.Panic(err)
-		}
+		wg.Add(1)
+		go func(collectionName string, driverData *driverModel.DriverData) {
+			defer wg.Done()
+			err = driverData.InsertBulk(collectionName, drivers)
+			if err != nil {
+				log.Panic(err)
+			}
 
-		driverData.InsertBulk(collectionsName, drivers)
-		drivers = nil
+			err := driverData.CreateIndex(collectionName)
+			if err != nil {
+				log.Panic(err)
+			}
+
+			drivers = nil
+
+		}(collectionName, driverData)
 	}
+
+	wg.Wait()
+
 }
 
-// this struct is used for GenereteDriver
+// this struct is used for Generete Driver
 type Driver struct {
 	Name   string  `json:"name"`
 	Lat    float64 `json:"lat"`
@@ -139,7 +219,7 @@ type Driver struct {
 // with new location from latitude and longitude given.
 func GenereateDriver(lat, lon float64, sum int) []Driver {
 	var drivers []Driver
-	location.SetupLocation(lat, lon)
+	loc := location.New(lat, lon)
 
 	// get 50 % of the sum data
 	smallPercentage := (50.0 / 100.0) * float64(sum)
@@ -149,9 +229,9 @@ func GenereateDriver(lat, lon float64, sum int) []Driver {
 	for i := 0; i <= sum; i++ {
 		if sum-i <= percentData {
 			// generate lat and lon using minute. from specific number 1-3
-			lat, lon := location.RandomLatLongMinute(4)
+			lat, lon := loc.RandomLatLongMinute(4)
 			dummyDriver := Driver{
-				Name:   fake.FullName(),
+				Name:   "DummyFalse",
 				Lat:    lat,
 				Lon:    lon,
 				Status: false,
@@ -159,9 +239,9 @@ func GenereateDriver(lat, lon float64, sum int) []Driver {
 			drivers = append(drivers, dummyDriver)
 		} else {
 			// generate lat and lon using seconds. from specific number 1-6
-			lat, lon := location.RandomLatLong(7)
+			lat, lon := loc.RandomLatLongSeconds(7)
 			dummyDriver := Driver{
-				Name:   fake.FullName(),
+				Name:   "DummyTrue",
 				Lat:    lat,
 				Lon:    lon,
 				Status: true,
