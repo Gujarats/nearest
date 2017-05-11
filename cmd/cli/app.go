@@ -22,6 +22,7 @@ func init() {
 
 func main() {
 	mongo := database.GetMongo()
+	defer mongo.Close()
 
 	app := cli.NewApp()
 	app.Name = "MyCli"
@@ -53,14 +54,20 @@ func main() {
 
 		// drop databse
 		{
+			// getting database name from input
 			Name:    "drop",
 			Aliases: []string{"d"},
 			Usage:   "Drop database",
 			Action: func(c *cli.Context) error {
+				databaseName := c.Args().Get(0)
+				if databaseName == "" {
+					fmt.Println("Please input database name")
+					return nil
+				}
 
-				err := mongo.DB("LoadTest").DropDatabase()
+				err := mongo.DB(databaseName).DropDatabase()
 				if err != nil {
-					fmt.Println("Error = ", err)
+					fmt.Println("Error = ", err.Error())
 				}
 
 				fmt.Println("Succes drop database")
