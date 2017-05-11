@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"time"
 
 	"github.com/Gujarats/API-Golang/database"
 	"github.com/urfave/cli"
@@ -22,6 +23,7 @@ func init() {
 
 func main() {
 	mongo := database.GetMongo()
+	mongo.SetSocketTimeout(1 * time.Hour)
 	defer mongo.Close()
 
 	app := cli.NewApp()
@@ -68,6 +70,7 @@ func main() {
 				err := mongo.DB(databaseName).DropDatabase()
 				if err != nil {
 					fmt.Println("Error = ", err.Error())
+					return nil
 				}
 
 				fmt.Println("Succes drop database")
