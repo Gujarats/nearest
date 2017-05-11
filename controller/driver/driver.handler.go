@@ -91,7 +91,7 @@ func UpdateDriver(m *sync.Mutex, driver driverInterface.DriverInterfacce, cityIn
 		// checks drivers location which district they are now
 		// NOTE : getting the nearest district must not null or fail. so we need to repeat the function if we got null.
 		// but there is one approach solutions we give more distance value so that we can find the district event it is far.
-		district, err := cityInterface.GetNearestDistrict(city, latFloat, lonFloat, 5000)
+		district, err := cityInterface.GetNearestDistrict(city, latFloat, lonFloat, 500)
 		if err != nil {
 			w.WriteHeader(http.StatusInternalServerError)
 			global.SetResponse(w, "Failed", "Failed to get nearest district")
@@ -177,6 +177,18 @@ func FindDriver(m *sync.Mutex, driver driverInterface.DriverInterfacce, cityInte
 			return
 		}
 		distanceInt := intNumbers[0]
+
+		// determined which quadran the input locations
+
+		// NOTE : send the driver which locations and its distance from input location
+		// 1.  getting all centers location map[int][4]locations
+		// 2. determined which quadran is it for inputLocation
+		// 3. get nearest marked locations from that quadran
+		// 4. get driver from the collections of nearest locations(this is must be array)
+		// 5. send the driver
+		// 6. if the driver is not found then go to next nearest locations. currentIndex +1. until the last index.
+		// 7. if not found find the driver on the next quadran (currentquadran +1) until reach 4
+		// 8. if not found find the driver on the next level. repeat this until you found the driver
 
 		// get all district from redis and calculate it
 		// calculate nearest location district with given location and city from mongodb
