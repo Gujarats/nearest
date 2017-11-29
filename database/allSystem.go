@@ -24,7 +24,7 @@ func SystemConnection() map[string]interface{} {
 	var err error
 	// create redis connection
 	redisConn := RedisHost{
-		Address:  "redis:6379",
+		Address:  "localhost:6379",
 		Password: "",
 		DB:       0,
 	}
@@ -36,7 +36,7 @@ func SystemConnection() map[string]interface{} {
 
 	//create mongodb connection
 	mongo := MongoHost{
-		Host: "db",
+		Host: "localhost",
 		Port: "27017",
 	}
 	mongoConnection := mongo.Connect()

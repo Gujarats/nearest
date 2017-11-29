@@ -11,14 +11,14 @@ import (
 
 	"gopkg.in/mgo.v2/bson"
 
-	"github.com/Gujarats/API-Golang/util"
+	"github.com/Gujarats/nearest/util"
 
-	"github.com/Gujarats/API-Golang/model/city/interface"
+	"github.com/Gujarats/nearest/model/city/interface"
+	driverInterface "github.com/Gujarats/nearest/model/driver/interface"
 
-	driverModel "github.com/Gujarats/API-Golang/model/driver"
-	"github.com/Gujarats/API-Golang/model/driver/interface"
+	driverModel "github.com/Gujarats/nearest/model/driver"
 
-	"github.com/Gujarats/API-Golang/model/global"
+	"github.com/Gujarats/nearest/model/global"
 )
 
 // create logger to print error in the console
@@ -137,6 +137,7 @@ func UpdateDriver(m *sync.Mutex, driver driverInterface.DriverInterfacce, cityIn
 }
 
 func FindDriver(m *sync.Mutex, driver driverInterface.DriverInterfacce, cityInterface cityInterface.CityInterfacce) http.Handler {
+
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 
 		m.Lock()
@@ -309,7 +310,8 @@ func InsertDriver(driver driverInterface.DriverInterfacce) http.Handler {
 		latFloat := convertedFloat[0]
 		lonFloat := convertedFloat[1]
 
-		// insert driver
+		// insert driver t
+		// TODO :  error handler here what happens if process of insertion data fails
 		driver.Insert(name, name, latFloat, lonFloat, statusBool)
 
 		//return succes response

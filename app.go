@@ -6,15 +6,15 @@ import (
 	"net/http"
 	"sync"
 
-	"github.com/Gujarats/API-Golang/database"
+	"github.com/Gujarats/nearest/database"
 
-	driverModel "github.com/Gujarats/API-Golang/model/driver"
-	driverInterface "github.com/Gujarats/API-Golang/model/driver/interface"
+	driverModel "github.com/Gujarats/nearest/model/driver"
+	driverInterface "github.com/Gujarats/nearest/model/driver/interface"
 
-	cityModel "github.com/Gujarats/API-Golang/model/city"
-	"github.com/Gujarats/API-Golang/model/city/interface"
+	cityModel "github.com/Gujarats/nearest/model/city"
+	cityInterface "github.com/Gujarats/nearest/model/city/interface"
 
-	driverController "github.com/Gujarats/API-Golang/controller/driver"
+	driverController "github.com/Gujarats/nearest/controller/driver"
 
 	mgo "gopkg.in/mgo.v2"
 	redis "gopkg.in/redis.v5"

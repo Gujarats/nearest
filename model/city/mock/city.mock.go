@@ -4,7 +4,7 @@ import (
 	mgo "gopkg.in/mgo.v2"
 	redis "gopkg.in/redis.v5"
 
-	"github.com/Gujarats/API-Golang/model/city"
+	"github.com/Gujarats/nearest/model/city"
 )
 
 type CityMock struct {

@@ -9,13 +9,13 @@ import (
 	"strconv"
 	"sync"
 
-	"github.com/Gujarats/API-Golang/model/global"
+	"github.com/Gujarats/nearest/model/global"
 
-	"github.com/Gujarats/API-Golang/model/city/mock"
-	"github.com/Gujarats/API-Golang/model/driver/mock"
+	"github.com/Gujarats/nearest/model/city/mock"
+	"github.com/Gujarats/nearest/model/driver/mock"
 
-	"github.com/Gujarats/API-Golang/model/city/interface"
-	"github.com/Gujarats/API-Golang/model/driver/interface"
+	"github.com/Gujarats/nearest/model/city/interface"
+	"github.com/Gujarats/nearest/model/driver/interface"
 )
 
 // create test request that pass all parameters requirement.

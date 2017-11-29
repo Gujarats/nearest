@@ -1,7 +1,7 @@
 package driverInterface
 
 import (
-	"github.com/Gujarats/API-Golang/model/driver"
+	"github.com/Gujarats/nearest/model/driver"
 	mgo "gopkg.in/mgo.v2"
 	redis "gopkg.in/redis.v5"
 )
