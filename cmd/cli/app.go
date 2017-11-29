@@ -6,7 +6,7 @@ import (
 	"os"
 	"time"
 
-	"github.com/Gujarats/API-Golang/database"
+	"github.com/Gujarats/nearest/database"
 	"github.com/urfave/cli"
 	mgo "gopkg.in/mgo.v2"
 )

@@ -15,8 +15,8 @@ import (
 
 	"gopkg.in/mgo.v2/bson"
 
-	"github.com/Gujarats/API-Golang/model/driver"
-	"github.com/Gujarats/API-Golang/model/global"
+	"github.com/Gujarats/nearest/model/driver"
+	"github.com/Gujarats/nearest/model/global"
 )
 
 func main() {

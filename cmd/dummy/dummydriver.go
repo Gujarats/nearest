@@ -11,15 +11,15 @@ import (
 
 	// fake data library
 
-	location "gopkg.in/gujarats/GenerateLocation.v1"
+	location "gopkg.in/Gujarats/GenerateLocation.v1"
 
 	mgo "gopkg.in/mgo.v2"
 	redis "gopkg.in/redis.v5"
 
-	"github.com/Gujarats/API-Golang/database"
+	"github.com/Gujarats/nearest/database"
 
-	cityModel "github.com/Gujarats/API-Golang/model/city"
-	driverModel "github.com/Gujarats/API-Golang/model/driver"
+	cityModel "github.com/Gujarats/nearest/model/city"
+	driverModel "github.com/Gujarats/nearest/model/driver"
 )
 
 func main() {

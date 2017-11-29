@@ -12,10 +12,10 @@ import (
 
 	mgo "gopkg.in/mgo.v2"
 
-	"github.com/Gujarats/API-Golang/database"
-	"github.com/Gujarats/API-Golang/model/global"
+	"github.com/Gujarats/nearest/database"
+	"github.com/Gujarats/nearest/model/global"
 
-	location "gopkg.in/gujarats/GenerateLocation.v1"
+	location "gopkg.in/Gujarats/GenerateLocation.v1"
 )
 
 type LoadTest struct {
