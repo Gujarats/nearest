@@ -136,12 +136,19 @@ func UpdateDriver(m *sync.Mutex, driver driverInterface.DriverInterfacce, cityIn
 
 }
 
-func FindDriver(m *sync.Mutex, driver driverInterface.DriverInterfacce, cityInterface cityInterface.CityInterfacce) http.Handler {
+// TODO :  to receive all values from request
+// getting the value using the tag value
+type Receiver struct {
+	Id       string  `request:"required"`
+	Name     string  `request:"required"`
+	Lat      float64 `request:"required"`
+	Lon      float64 `request:"required"`
+	Distance float64 `request:"required"`
+}
+
+func FindDriver(driver driverInterface.DriverInterfacce, cityInterface cityInterface.CityInterfacce) http.Handler {
 
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-
-		m.Lock()
-		defer m.Unlock()
 
 		//start time for lenght of the process
 		startTimer := time.Now()
