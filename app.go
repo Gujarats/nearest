@@ -7,6 +7,7 @@ import (
 	"sync"
 
 	"github.com/Gujarats/nearest/database"
+	"github.com/gorilla/mux"
 
 	driverModel "github.com/Gujarats/nearest/model/driver"
 	driverInterface "github.com/Gujarats/nearest/model/driver/interface"
@@ -45,11 +46,16 @@ func main() {
 	city.GetConn(mongoConn, redisConn)
 	m := &sync.Mutex{}
 
-	// driver router
-	http.Handle("/driver/find", driverController.FindDriver(m, driver, city))
-	http.Handle("/driver/update", driverController.UpdateDriver(m, driver, city))
+	// router
+	router := mux.NewRouter()
+	router.HandleFunc("/driver/v2/find", driverController.FindDriver(m, driver, city))
+	log.Fatal(http.ListenAndServe(":8080", router))
 
-	port := ":8080"
+	// driver router
+	//http.Handle("/driver/v1/find", driverController.FindDriver(m, driver, city))
+	http.Handle("/driver/v1/update", driverController.UpdateDriver(m, driver, city))
+
+	port := ":8081"
 	fmt.Println("App Started on port = ", port)
 	err := http.ListenAndServe(port, nil)
 	if err != nil {
