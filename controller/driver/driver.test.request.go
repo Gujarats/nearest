@@ -45,7 +45,7 @@ func createFindDriverRequest(cityMock *cityMock.CityMock, driverMock *driverMock
 
 	// craete request
 	handler := FindDriver(m, driver, city)
-	handler.ServeHTTP(w, req)
+	handler(w, req)
 
 	// check the response
 	resp := w.Body.Bytes()

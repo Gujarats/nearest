@@ -5,11 +5,11 @@ import (
 	"net/http"
 	"testing"
 
-	"github.com/Gujarats/API-Golang/model/city"
-	"github.com/Gujarats/API-Golang/model/driver"
+	"github.com/Gujarats/nearest/model/city"
+	"github.com/Gujarats/nearest/model/driver"
 
-	"github.com/Gujarats/API-Golang/model/city/mock"
-	"github.com/Gujarats/API-Golang/model/driver/mock"
+	"github.com/Gujarats/nearest/model/city/mock"
+	"github.com/Gujarats/nearest/model/driver/mock"
 )
 
 func TestUpdateDriver(t *testing.T) {

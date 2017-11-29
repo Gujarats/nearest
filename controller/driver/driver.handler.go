@@ -136,9 +136,11 @@ func UpdateDriver(m *sync.Mutex, driver driverInterface.DriverInterfacce, cityIn
 
 }
 
-func FindDriver(m *sync.Mutex, driver driverInterface.DriverInterfacce, cityInterface cityInterface.CityInterfacce) http.Handler {
+type request func(w http.ResponseWriter, r *http.Request)
 
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+func FindDriver(m *sync.Mutex, driver driverInterface.DriverInterfacce, cityInterface cityInterface.CityInterfacce) request {
+
+	return func(w http.ResponseWriter, r *http.Request) {
 
 		m.Lock()
 		defer m.Unlock()
@@ -264,7 +266,7 @@ func FindDriver(m *sync.Mutex, driver driverInterface.DriverInterfacce, cityInte
 		json.NewEncoder(w).Encode(response)
 		return
 
-	})
+	}
 }
 
 func InsertDriver(driver driverInterface.DriverInterfacce) http.Handler {
