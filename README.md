@@ -1,5 +1,5 @@
 
-# API-Golang [![Build Status](https://secure.travis-ci.org/Gujarats/API-Golang.png)](http://travis-ci.org/Gujarats/API-Golang)
+# API-Golang [![Build Status](https://secure.travis-ci.org/Gujarats/nearest.png)](http://travis-ci.org/Gujarats/nearest)
 This is simple project for getting a driver like for example if you're using uber or grab or gojek to get a driver.
 
 Imagine if there are 2.500.000 drivers moving around in the city. let say in Bandung city.
