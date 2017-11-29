@@ -38,7 +38,7 @@ func TestDistance(t *testing.T) {
 		actual := Distance(test.Lat1, test.Lon1, test.Lat2, test.Lon2)
 
 		if actual < test.Expected {
-			t.Errorf("Error actual = %v, Expect more then zero = $v", actual, test.Expected)
+			t.Errorf("Error actual = %v, Expect more then zero = %v\n", actual, test.Expected)
 		}
 	}
 }
