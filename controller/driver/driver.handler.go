@@ -12,6 +12,7 @@ import (
 	"gopkg.in/mgo.v2/bson"
 
 	"github.com/Gujarats/nearest/util"
+	"github.com/Gujarats/receiver"
 
 	"github.com/Gujarats/nearest/model/city/interface"
 	driverInterface "github.com/Gujarats/nearest/model/driver/interface"
@@ -138,12 +139,11 @@ func UpdateDriver(m *sync.Mutex, driver driverInterface.DriverInterfacce, cityIn
 
 // TODO :  to receive all values from request
 // getting the value using the tag value
-type Receiver struct {
-	Id       string  `request:"required"`
-	Name     string  `request:"required"`
-	Lat      float64 `request:"required"`
-	Lon      float64 `request:"required"`
-	Distance float64 `request:"required"`
+type DriverRequest struct {
+	Lat      float64 `request:"latitude,required"`
+	Lon      float64 `request:"longitude,required"`
+	City     string  `request:"city,required"`
+	Distance int64   `request:"distance,required"`
 }
 
 func FindDriver(driver driverInterface.DriverInterfacce, cityInterface cityInterface.CityInterfacce) http.Handler {
@@ -152,39 +152,13 @@ func FindDriver(driver driverInterface.DriverInterfacce, cityInterface cityInter
 
 		//start time for lenght of the process
 		startTimer := time.Now()
-
-		lat := r.FormValue("latitude")
-		lon := r.FormValue("longitude")
-		city := r.FormValue("city")
-		distance := r.FormValue("distance")
-
-		//checking empty value
-		checkValue := util.CheckValue(lat, lon, city, distance)
-		if !checkValue {
-			logger.Println("Required Params Empty")
-
-			//return Bad response
-			w.WriteHeader(http.StatusBadRequest)
-			global.SetResponse(w, "Failed", "Required Params Empty")
-			return
-		}
-
-		floatNumbers, err := util.ConvertToFloat64(lat, lon)
+		var dr DriverRequest
+		err := receiver.SetData(&dr, r)
 		if err != nil {
-			w.WriteHeader(http.StatusBadRequest)
-			global.SetResponse(w, "Failed", "Failed to convert float value")
+			w.WriteHeader(http.StatusInternalServerError)
+			global.SetResponse(w, "Failed", err.Error())
 			return
 		}
-		latFloat := floatNumbers[0]
-		lonFloat := floatNumbers[1]
-
-		intNumbers, err := util.ConvertToInt64(distance)
-		if err != nil {
-			w.WriteHeader(http.StatusBadRequest)
-			global.SetResponse(w, "Failed", "Failed to convert integer value")
-			return
-		}
-		distanceInt := intNumbers[0]
 
 		// determined which quadran the input locations
 
@@ -200,7 +174,7 @@ func FindDriver(driver driverInterface.DriverInterfacce, cityInterface cityInter
 
 		// get all district from redis and calculate it
 		// calculate nearest location district with given location and city from mongodb
-		district, err := cityInterface.GetNearestDistrict(city, latFloat, lonFloat, distanceInt)
+		district, err := cityInterface.GetNearestDistrict(dr.City, dr.Lat, dr.Lon, dr.Distance)
 		if err != nil {
 			w.WriteHeader(http.StatusInternalServerError)
 			global.SetResponse(w, "Failed", "Failed to get nearest district")
