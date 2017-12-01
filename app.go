@@ -46,7 +46,7 @@ func main() {
 	m := &sync.Mutex{}
 
 	// driver router
-	http.Handle("/driver/find", driverController.FindDriver(m, driver, city))
+	http.Handle("/driver/find", driverController.FindDriver(driver, city))
 	http.Handle("/driver/update", driverController.UpdateDriver(m, driver, city))
 
 	port := ":8080"

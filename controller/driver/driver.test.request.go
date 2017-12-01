@@ -41,10 +41,9 @@ func createFindDriverRequest(cityMock *cityMock.CityMock, driverMock *driverMock
 	// city mock model
 	var city cityInterface.CityInterfacce
 	city = cityMock
-	m := &sync.Mutex{}
 
 	// craete request
-	handler := FindDriver(m, driver, city)
+	handler := FindDriver(driver, city)
 	handler.ServeHTTP(w, req)
 
 	// check the response
