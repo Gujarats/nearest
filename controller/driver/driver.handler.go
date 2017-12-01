@@ -2,9 +2,7 @@ package driver
 
 import (
 	"encoding/json"
-	"log"
 	"net/http"
-	"os"
 	"strconv"
 	"sync"
 	"time"
@@ -21,15 +19,6 @@ import (
 
 	"github.com/Gujarats/nearest/model/global"
 )
-
-// create logger to print error in the console
-var logger *log.Logger
-
-func init() {
-	logger = log.New(os.Stderr,
-		"Controller Driver :: ",
-		log.Ldate|log.Ltime|log.Lshortfile)
-}
 
 // type for the update driver request
 type DriverUpdateRequest struct {
@@ -150,7 +139,6 @@ func FindDriver(driver driverInterface.DriverInterfacce, cityInterface cityInter
 		}
 
 		// determined which quadran the input locations
-
 		// NOTE : send the driver which locations and its distance from input location
 		// 1.  getting all centers location map[int][4]locations
 		// 2. determined which quadran is it for inputLocation
@@ -252,8 +240,6 @@ func InsertDriver(driver driverInterface.DriverInterfacce) http.Handler {
 
 		isAllExist := util.CheckValue(name, lat, lon, status)
 		if !isAllExist {
-			logger.Println("Required Params Empty")
-
 			//return Bad response
 			w.WriteHeader(http.StatusBadRequest)
 			global.SetResponse(w, "Failed", "Required Params Empty")
@@ -264,7 +250,6 @@ func InsertDriver(driver driverInterface.DriverInterfacce) http.Handler {
 		statusBool, err := strconv.ParseBool(status)
 		if err != nil {
 			//return Bad response
-			logger.Println("Failed to Parse Boolean")
 			w.WriteHeader(http.StatusBadRequest)
 			global.SetResponse(w, "Failed", "Parse Boolean Erro")
 			return
