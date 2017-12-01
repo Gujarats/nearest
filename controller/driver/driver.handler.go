@@ -31,6 +31,16 @@ func init() {
 		log.Ldate|log.Ltime|log.Lshortfile)
 }
 
+// type for the update driver request
+type DriverUpdateRequest struct {
+	Id     string  `request:"id,required"`
+	Name   string  `request:"name,required"`
+	Lat    float64 `request:"latitude,required"`
+	Lon    float64 `request:"longitude,required"`
+	Status bool    `request:"status,required"`
+	City   string  `request:"city,required"`
+}
+
 // find specific driver with their ID or name.
 // if the desired data didn't exist then insert new data
 func UpdateDriver(m *sync.Mutex, driver driverInterface.DriverInterfacce, cityInterface cityInterface.CityInterfacce) http.Handler {
@@ -40,25 +50,18 @@ func UpdateDriver(m *sync.Mutex, driver driverInterface.DriverInterfacce, cityIn
 
 		w.Header().Set("Access-Control-Allow-Methods", "POST")
 
-		id := r.FormValue("id")
-		name := r.FormValue("name")
-		lat := r.FormValue("latitude")
-		lon := r.FormValue("longitude")
-		status := r.FormValue("status")
-		city := r.FormValue("city")
-
-		isAllExist := util.CheckValue(id, name, lat, lon, status, city)
-		if !isAllExist {
-			logger.Println("Required Params Empty")
-
+		// receive request value to type
+		var dr DriverUpdateRequest
+		err := receiver.SetData(&dr, r)
+		if err != nil {
 			//return Bad response
 			w.WriteHeader(http.StatusBadRequest)
-			global.SetResponse(w, "Failed", "Required Params Empty")
+			global.SetResponse(w, "Failed", err.Error())
 			return
 		}
 
 		// check id for validation format
-		ok := bson.IsObjectIdHex(id)
+		ok := bson.IsObjectIdHex(dr.Id)
 		if !ok {
 			//return Bad response
 			w.WriteHeader(http.StatusBadRequest)
@@ -66,33 +69,13 @@ func UpdateDriver(m *sync.Mutex, driver driverInterface.DriverInterfacce, cityIn
 			return
 		}
 
-		// convert string to bool
-		statusBool, err := strconv.ParseBool(status)
-		if err != nil {
-			//return Bad response
-			w.WriteHeader(http.StatusBadRequest)
-			global.SetResponse(w, "Failed", "Parse Boolean Error")
-			return
-		}
-
-		// convert string to float64
-		convertedFloat, err := util.ConvertToFloat64(lat, lon)
-		if err != nil {
-			w.WriteHeader(http.StatusBadRequest)
-			global.SetResponse(w, "Failed", "Failed to conver float value")
-			return
-		}
-
-		latFloat := convertedFloat[0]
-		lonFloat := convertedFloat[1]
-
 		// check driver last location which district they were before
-		lastDistrict := driver.GetLastDistrict(id)
+		lastDistrict := driver.GetLastDistrict(dr.Id)
 
 		// checks drivers location which district they are now
 		// NOTE : getting the nearest district must not null or fail. so we need to repeat the function if we got null.
 		// but there is one approach solutions we give more distance value so that we can find the district event it is far.
-		district, err := cityInterface.GetNearestDistrict(city, latFloat, lonFloat, 500)
+		district, err := cityInterface.GetNearestDistrict(dr.City, dr.Lat, dr.Lon, 500)
 		if err != nil {
 			w.WriteHeader(http.StatusInternalServerError)
 			global.SetResponse(w, "Failed", "Failed to get nearest district")
@@ -115,12 +98,19 @@ func UpdateDriver(m *sync.Mutex, driver driverInterface.DriverInterfacce, cityIn
 			if district.Name+"_district_"+district.Id.Hex() != lastDistrict {
 				// remove the driver data in the last district
 				// lastDistrict must formatted like collectionKey for district collections
-				driver.Remove(id, lastDistrict)
+				driver.Remove(dr.Id, lastDistrict)
 			}
 
 		}
 
-		driverData := driverModel.DriverData{Id: bson.ObjectIdHex(id), Name: name, Status: statusBool, Location: driverModel.GeoJson{Type: "Point", Coordinates: []float64{lonFloat, latFloat}}}
+		// Update driver for given dr / driver data
+		driverData := driverModel.DriverData{
+			Id:   bson.ObjectIdHex(dr.Id),
+			Name: dr.Name, Status: dr.Status,
+			Location: driverModel.GeoJson{
+				Type: "Point", Coordinates: []float64{dr.Lon, dr.Lat},
+			},
+		}
 		err = driver.Update(district.Name, district.Id.Hex(), driverData)
 		if err != nil {
 			w.WriteHeader(http.StatusInternalServerError)
@@ -137,7 +127,6 @@ func UpdateDriver(m *sync.Mutex, driver driverInterface.DriverInterfacce, cityIn
 
 }
 
-// TODO :  to receive all values from request
 // getting the value using the tag value
 type DriverRequest struct {
 	Lat      float64 `request:"latitude,required"`
