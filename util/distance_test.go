@@ -1,6 +1,10 @@
 package util
 
-import "testing"
+import (
+	"testing"
+
+	"github.com/magiconair/properties/assert"
+)
 
 // Test if coverting to radian is more than zero
 func TestToRadians(t *testing.T) {
@@ -40,5 +44,40 @@ func TestDistance(t *testing.T) {
 		if actual < test.Expected {
 			t.Errorf("Error actual = %v, Expect more then zero = %v\n", actual, test.Expected)
 		}
+	}
+}
+
+func TestGetNearestLocation(t *testing.T) {
+	testObjects := []struct {
+		myLoc     Location
+		othersLoc []Location
+		expected  Location
+	}{
+		{
+			myLoc: Location{Lat: -6.8836631, Lon: 107.5969201},
+			othersLoc: []Location{
+				// cileunyi
+				{
+					Lat: -6.9271271,
+					Lon: 107.7190409,
+				},
+
+				// kampung tulip
+				{
+
+					Lat: -6.963114,
+					Lon: 107.6612395,
+				},
+			},
+			expected: Location{
+				Lat: -6.963114,
+				Lon: 107.6612395,
+			},
+		},
+	}
+
+	for _, testObject := range testObjects {
+		actual := GetNearestLocation(testObject.myLoc, testObject.othersLoc)
+		assert.Equal(t, actual.RLocation, testObject.expected)
 	}
 }
